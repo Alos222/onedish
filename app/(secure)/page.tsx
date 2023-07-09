@@ -1,7 +1,5 @@
-import HomePage from "app/(secure)/HomePage";
+import HomePage from 'app/(secure)/HomePage';
 
 export default async function App() {
-  return (
-    <HomePage />
-  );
+  return <HomePage />;
 }

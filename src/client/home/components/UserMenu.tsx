@@ -19,7 +19,7 @@ export default function UserMenu() {
   // const logOut = useLogOut();
   const router = useRouter();
   const pathname = usePathname();
-  // const { displayError } = useNotification();
+  // const { displayError } = useNotifications();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -38,21 +38,20 @@ export default function UserMenu() {
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Tooltip title='Account profiles'>
+        <Tooltip title="Account profiles">
           <IconButton
             onClick={handleClick}
-            size='small'
+            size="small"
             sx={{ ml: 2 }}
             aria-controls={open ? 'account-menu' : undefined}
-            aria-haspopup='true'
+            aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
-          >
-          </IconButton>
+          ></IconButton>
         </Tooltip>
       </Box>
       <Menu
         anchorEl={anchorEl}
-        id='account-menu'
+        id="account-menu"
         open={open}
         onClose={handleClose}
         onClick={handleClose}

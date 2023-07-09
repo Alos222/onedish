@@ -1,7 +1,6 @@
 'use client';
 
 import { Box } from '@mui/material';
-import Link from 'next/link';
 
 interface HomePageProps {}
 

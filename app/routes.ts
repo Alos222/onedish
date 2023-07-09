@@ -1,4 +1,5 @@
 import HomeIcon from '@mui/icons-material/Home';
+import StoreIcon from '@mui/icons-material/Store';
 import { SvgIconTypeMap } from '@mui/material';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
 
@@ -21,6 +22,16 @@ const routes: Route[] = [
     name: 'Login Success',
     href: '/auth/login-success',
     icon: HomeIcon,
+  },
+  {
+    name: 'Admin',
+    href: '/admin',
+    icon: HomeIcon,
+  },
+  {
+    name: 'Vendors',
+    href: '/admin/vendors',
+    icon: StoreIcon,
   },
 ];
 
