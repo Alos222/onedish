@@ -131,9 +131,8 @@ export default function SortTable<T>({
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box display="flex" justifyContent="space-evenly">
+      <Box display="flex" justifyContent="space-between">
         <TextField
-          fullWidth
           label="Search"
           placeholder="Search..."
           variant="standard"
@@ -141,7 +140,7 @@ export default function SortTable<T>({
           onChange={(e) => {
             setText(e.target.value);
           }}
-          sx={{ mt: 1 }}
+          sx={{ mt: 1, flexGrow: 1 }}
         />
         {Actions && (
           <Box alignSelf="flex-end" ml={2}>
