@@ -10,12 +10,9 @@ interface VendorPageProps {}
 // has access to state and effects just like Page components
 // in the `pages` directory.
 export default function VendorPage({}: VendorPageProps) {
-  const { displayInfo } = useNotifications();
   return (
     <Box>
-      <AddVendorDialog
-        onVendorAdded={(vendor) => displayInfo(`The vendor ${vendor.name} at ${vendor.address} was added!`)}
-      />
+      <AddVendorDialog />
     </Box>
   );
 }

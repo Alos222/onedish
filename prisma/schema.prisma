@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type VendorsPlace {
+  formatted_address String?
+  geometry          VendorsPlaceGeometry?
+  html_attributions String[]
+  icon              String?
+  name              String?
+  place_id          String?
+  price_level       Int?
+  rating            Float?
+  url               String?
+  website           String?
+}
+
+type VendorsPlaceGeometry {
+  location VendorsPlaceGeometryLocation?
+  viewport VendorsPlaceGeometryViewport?
+}
+
+type VendorsPlaceGeometryLocation {
+  lat Float
+  lng Float
+}
+
+type VendorsPlaceGeometryViewport {
+  east  Float
+  north Float
+  south Float
+  west  Float
+}
+
+model vendors {
+  id      String        @id @default(auto()) @map("_id") @db.ObjectId
+  address String
+  name    String
+  place   VendorsPlace?
+}

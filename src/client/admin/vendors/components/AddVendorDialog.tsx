@@ -7,21 +7,24 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from '@mui/icons-material/Close';
 import MapSelect from './VendorMap';
 import { Box, DialogContentText, Divider, IconButton, TextField, Typography } from '@mui/material';
-import { Vendor } from 'src/types';
+import { OnedishPlaceResult, Vendor } from 'src/types';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
+import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
+import { AddVendorResponse } from 'src/types/response/vendors/add-vendor.response';
+import { AddVendorRequest } from 'src/types/request/vendors/add-vendor.request';
 
-interface AddVendorDialogProps {
-  onVendorAdded: (vendor: Vendor) => void;
-}
-export default function AddVendorDialog({ onVendorAdded }: AddVendorDialogProps) {
+interface AddVendorDialogProps {}
+
+export default function AddVendorDialog({}: AddVendorDialogProps) {
+  const { post } = useApiRequest('secure/admin/vendors');
+  const { displayInfo, displayError } = useNotifications();
   const [open, setOpen] = useState(false);
 
   // The name and address details of a vendor
   // Can be autofilled by selecting something on the map, or manually entered
   const [placeName, setPlaceName] = useState<string | undefined>('');
   const [placeAddress, setPlaceAddress] = useState<string | undefined>('');
-
-  const { displayError } = useNotifications();
+  const [place, setPlace] = useState<OnedishPlaceResult | undefined>();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -30,7 +33,7 @@ export default function AddVendorDialog({ onVendorAdded }: AddVendorDialogProps)
     setOpen(false);
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     let isError = false;
     if (!placeName) {
       displayError('You need to provide a name');
@@ -43,10 +46,21 @@ export default function AddVendorDialog({ onVendorAdded }: AddVendorDialogProps)
     if (isError || !placeName || !placeAddress) {
       return;
     }
-    onVendorAdded({
+
+    const vendor: Vendor = {
+      place,
       name: placeName,
       address: placeAddress,
-    });
+    };
+
+    const data = await post<AddVendorRequest, AddVendorResponse>({ vendor });
+    if (data.error) {
+      displayError(data.error);
+    } else {
+      displayInfo(`The vendor ${vendor.name} at ${vendor.address} was added!`);
+    }
+    console.log(data);
+
     handleClose();
   };
 
@@ -74,9 +88,10 @@ export default function AddVendorDialog({ onVendorAdded }: AddVendorDialogProps)
         <DialogContent sx={{ mt: 2 }}>
           <DialogContentText>Search for a restaurant to quickly fill details</DialogContentText>
           <MapSelect
-            onVendorSelected={(name, address) => {
-              setPlaceName(name);
-              setPlaceAddress(address);
+            onVendorSelected={(place) => {
+              setPlaceName(place.name);
+              setPlaceAddress(place.formatted_address);
+              setPlace(place);
             }}
           />
 

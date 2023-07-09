@@ -3,11 +3,12 @@ import { Box, Autocomplete, TextField, CircularProgress, Typography, Button, Div
 import { useDebouncedCallback } from 'use-debounce';
 import usePlacesServices from '../hooks/usePlacesServices';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
+import { GooglePlacesKeys, OnedishPlaceResult } from 'src/types';
 
 type AutocompletePrediction = google.maps.places.AutocompletePrediction;
 
 interface VendorMapProps {
-  onVendorSelected: (name?: string, address?: string) => void;
+  onVendorSelected: (place: OnedishPlaceResult) => void;
 }
 
 /**
@@ -28,7 +29,7 @@ export default function VendorMap({ onVendorSelected }: VendorMapProps) {
   const [placeTextValue, setPlaceTextValue] = useState('');
 
   // The current place searched after selecting a value from the autocomplete
-  const [currentPlace, setCurrentPlace] = useState<google.maps.places.PlaceResult | null>(null);
+  const [currentPlace, setCurrentPlace] = useState<OnedishPlaceResult | null>(null);
 
   // Ref to the element for showing content in the map info window
   const contentRef = useRef<HTMLDivElement>(null);
@@ -55,9 +56,9 @@ export default function VendorMap({ onVendorSelected }: VendorMapProps) {
    * @returns
    */
   const searchMap = async (prediction: AutocompletePrediction) => {
-    const request = {
+    const request: google.maps.places.PlaceDetailsRequest = {
       placeId: prediction.place_id,
-      fields: ['name', 'formatted_address', 'place_id', 'geometry'],
+      fields: GooglePlacesKeys.map((key) => key),
     };
     if (!placesService) {
       displayWarning('Google search not initialized, try refreshing the page');
@@ -98,8 +99,8 @@ export default function VendorMap({ onVendorSelected }: VendorMapProps) {
    * After choosing a place on the map, this will auto fill in the place detail text fields
    * @param place
    */
-  const onSelectVendor = (place: google.maps.places.PlaceResult) => {
-    onVendorSelected(place.name, place.formatted_address);
+  const onSelectVendor = (place: OnedishPlaceResult) => {
+    onVendorSelected(place);
   };
 
   if (loading) {
