@@ -9,7 +9,8 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
-import { CircularProgress, Typography } from '@mui/material';
+import { CircularProgress, TextField, Typography } from '@mui/material';
+import { useDebounce } from 'use-debounce';
 
 export type Order = 'asc' | 'desc';
 
@@ -83,7 +84,8 @@ interface SortTableProps<T> {
   headCells: HeadCell<T>[];
   initialOrderBy: keyof T;
   loading?: boolean;
-  onPagePropsChange: (page: number, rowsPerPage: number, order: Order, orderBy: keyof T) => void;
+  Actions?: React.ReactNode;
+  onPagePropsChange: (page: number, rowsPerPage: number, order: Order, orderBy: keyof T, searchText: string) => void;
   children: (item: T) => React.ReactNode;
 }
 
@@ -93,6 +95,7 @@ export default function SortTable<T>({
   headCells,
   initialOrderBy,
   loading,
+  Actions,
   onPagePropsChange,
   children,
 }: SortTableProps<T>) {
@@ -100,6 +103,8 @@ export default function SortTable<T>({
   const [orderBy, setOrderBy] = React.useState<keyof T>(initialOrderBy);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [text, setText] = React.useState('');
+  const [searchText] = useDebounce(text, 1000);
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof T) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -118,15 +123,33 @@ export default function SortTable<T>({
   };
 
   React.useEffect(() => {
-    onPagePropsChange(page, rowsPerPage, order, orderBy);
-  }, [page, rowsPerPage, order, orderBy]);
+    onPagePropsChange(page, rowsPerPage, order, orderBy, searchText);
+  }, [page, rowsPerPage, order, orderBy, searchText]);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - total) : 0;
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+      <Box display="flex" justifyContent="space-evenly">
+        <TextField
+          fullWidth
+          label="Search"
+          placeholder="Search..."
+          variant="standard"
+          defaultValue={''}
+          onChange={(e) => {
+            setText(e.target.value);
+          }}
+          sx={{ mt: 1 }}
+        />
+        {Actions && (
+          <Box alignSelf="flex-end" ml={2}>
+            {Actions}
+          </Box>
+        )}
+      </Box>
+      <Paper sx={{ width: '100%', my: 2 }}>
         {loading && (
           <Box display="flex" justifyContent="center" py={5}>
             <CircularProgress />

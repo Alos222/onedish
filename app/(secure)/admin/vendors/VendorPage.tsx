@@ -1,8 +1,6 @@
 'use client';
 
 import { Box } from '@mui/material';
-import { Vendor } from '@prisma/client';
-import AddVendorDialog from 'src/client/admin/vendors/components/AddVendorDialog';
 import VendorsTable from 'src/client/admin/vendors/components/VendorsTable';
 
 interface VendorPageProps {}
@@ -13,7 +11,6 @@ interface VendorPageProps {}
 export default function VendorPage({}: VendorPageProps) {
   return (
     <Box>
-      <AddVendorDialog />
       <VendorsTable />
     </Box>
   );

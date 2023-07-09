@@ -6,6 +6,7 @@ import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { VendorPageData } from 'src/types/response/vendors/vendor-page.response';
 import SortTable, { HeadCell, Order } from 'src/client/common/components/SortTable';
+import AddVendorDialog from './AddVendorDialog';
 
 const headCells: HeadCell<Vendor>[] = [
   {
@@ -35,8 +36,16 @@ export default function VendorsTable() {
   const { get, loading } = useApiRequest('secure/admin/vendors');
   const { displayError } = useNotifications();
 
-  const onPagePropsChange = async (page: number, rowsPerPage: number, order: Order, orderBy: keyof Vendor) => {
-    let query = `?skip=${page * rowsPerPage}&take=${rowsPerPage}&sortType=${order}&column=${orderBy}`;
+  const onPagePropsChange = async (
+    page: number,
+    rowsPerPage: number,
+    order: Order,
+    orderBy: keyof Vendor,
+    searchText: string
+  ) => {
+    let query = `?skip=${
+      page * rowsPerPage
+    }&take=${rowsPerPage}&sortType=${order}&column=${orderBy}&searchQuery=${searchText}`;
     const response = await get<VendorPageData>(query);
     if (response.error) {
       displayError(response.error);
@@ -59,6 +68,7 @@ export default function VendorsTable() {
       headCells={headCells}
       initialOrderBy="name"
       loading={loading}
+      Actions={<AddVendorDialog />}
       onPagePropsChange={onPagePropsChange}
     >
       {(item) => {
