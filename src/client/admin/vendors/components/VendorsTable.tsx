@@ -32,7 +32,7 @@ const headCells: HeadCell<Vendor>[] = [
 export default function VendorsTable() {
   const [vendors, setVendors] = React.useState<Vendor[]>([]);
   const [total, setTotal] = React.useState<number>(0);
-  const { get } = useApiRequest('secure/admin/vendors');
+  const { get, loading } = useApiRequest('secure/admin/vendors');
   const { displayError } = useNotifications();
 
   const onPagePropsChange = async (page: number, rowsPerPage: number, order: Order, orderBy: keyof Vendor) => {
@@ -58,6 +58,7 @@ export default function VendorsTable() {
       total={total}
       headCells={headCells}
       initialOrderBy="name"
+      loading={loading}
       onPagePropsChange={onPagePropsChange}
     >
       {(item) => {

@@ -9,6 +9,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
+import { CircularProgress, Typography } from '@mui/material';
 
 export type Order = 'asc' | 'desc';
 
@@ -81,6 +82,7 @@ interface SortTableProps<T> {
   total: number;
   headCells: HeadCell<T>[];
   initialOrderBy: keyof T;
+  loading?: boolean;
   onPagePropsChange: (page: number, rowsPerPage: number, order: Order, orderBy: keyof T) => void;
   children: (item: T) => React.ReactNode;
 }
@@ -90,6 +92,7 @@ export default function SortTable<T>({
   total,
   headCells,
   initialOrderBy,
+  loading,
   onPagePropsChange,
   children,
 }: SortTableProps<T>) {
@@ -124,28 +127,40 @@ export default function SortTable<T>({
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={'medium'}>
-            <EnhancedTableHead
-              headCells={headCells}
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={handleRequestSort}
-            />
-            <TableBody>
-              {data.map((row, index) => children(row))}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: 53 * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        {loading && (
+          <Box display="flex" justifyContent="center" py={5}>
+            <CircularProgress />
+          </Box>
+        )}
+        {!loading && data.length === 0 && (
+          <Box display="flex" justifyContent="center" py={5}>
+            <Typography variant="body1">Nothing here</Typography>
+          </Box>
+        )}
+        {!loading && !!data.length && (
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={'medium'}>
+              <EnhancedTableHead
+                headCells={headCells}
+                order={order}
+                orderBy={orderBy}
+                onRequestSort={handleRequestSort}
+              />
+              <TableBody>
+                {data.map((row, index) => children(row))}
+                {emptyRows > 0 && (
+                  <TableRow
+                    style={{
+                      height: 53 * emptyRows,
+                    }}
+                  >
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
