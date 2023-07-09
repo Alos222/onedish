@@ -20,14 +20,9 @@ export default function AppBreadcrumbs() {
   const HomeIcon = routes[0].icon;
 
   return (
-    <Breadcrumbs aria-label='breadcrumb'>
-      <LinkRouter
-        underline='hover'
-        color='inherit'
-        href='/'
-        sx={{ display: 'flex', alignItems: 'center' }}
-      >
-        {HomeIcon && <HomeIcon sx={{ mr: 0.5 }} fontSize='inherit' />}
+    <Breadcrumbs aria-label="breadcrumb">
+      <LinkRouter underline="hover" color="inherit" href="/" sx={{ display: 'flex', alignItems: 'center' }}>
+        {HomeIcon && <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />}
         Home
       </LinkRouter>
       {pathnames.map((value, index) => {
@@ -41,34 +36,30 @@ export default function AppBreadcrumbs() {
 
         const route = routes.find((route) => route.href === pathHref);
         if (!route) {
-          console.error('Could not find route for breadcrumb', {
-            pathHref,
-            value,
-            pathnames,
-          });
+          // console.error('Could not find route for breadcrumb', {
+          //   pathHref,
+          //   value,
+          //   pathnames,
+          // });
           return null;
         }
 
         const { href, name, icon: Icon } = route;
 
         return last ? (
-          <Typography
-            color='text.primary'
-            key={href}
-            sx={{ display: 'flex', alignItems: 'center' }}
-          >
-            {Icon && <Icon sx={{ mr: 0.5 }} fontSize='inherit' />}
+          <Typography color="text.primary" key={href} sx={{ display: 'flex', alignItems: 'center' }}>
+            {Icon && <Icon sx={{ mr: 0.5 }} fontSize="inherit" />}
             {name}
           </Typography>
         ) : (
           <LinkRouter
-            underline='hover'
-            color='inherit'
+            underline="hover"
+            color="inherit"
             href={href}
             key={href}
             sx={{ display: 'flex', alignItems: 'center' }}
           >
-            {Icon && <Icon sx={{ mr: 0.5 }} fontSize='inherit' />}
+            {Icon && <Icon sx={{ mr: 0.5 }} fontSize="inherit" />}
             {name}
           </LinkRouter>
         );

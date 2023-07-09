@@ -8,7 +8,7 @@ interface PageContainerProps {
 export default function PageContainer({ title, subtitle, children }: React.PropsWithChildren<PageContainerProps>) {
   return (
     <Box>
-      <Box>
+      <Box mb={2}>
         <Typography variant="h5" color="primary">
           {title}
         </Typography>

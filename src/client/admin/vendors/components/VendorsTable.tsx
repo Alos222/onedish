@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Link from 'next/link';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import { Vendor } from '@prisma/client';
@@ -10,16 +11,10 @@ import AddVendorDialog from './AddVendorDialog';
 
 const headCells: HeadCell<Vendor>[] = [
   {
-    id: 'id',
-    label: 'Id',
-    numeric: false,
-    disablePadding: false,
-  },
-  {
     id: 'name',
     label: 'Name',
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     sortable: true,
   },
   {
@@ -73,9 +68,10 @@ export default function VendorsTable() {
     >
       {(item) => {
         return (
-          <TableRow hover tabIndex={-1} key={item.id} sx={{ cursor: 'pointer' }}>
-            <TableCell>{item.id}</TableCell>
-            <TableCell>{item.name}</TableCell>
+          <TableRow hover tabIndex={-1} key={item.id}>
+            <TableCell>
+              <Link href={`/admin/vendors/${item.id}`}>{item.name}</Link>
+            </TableCell>
             <TableCell>{item.address}</TableCell>
           </TableRow>
         );

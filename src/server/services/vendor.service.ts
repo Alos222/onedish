@@ -20,6 +20,14 @@ export class VendorService implements IVendorService {
     this.logger.info('finished adding vendor', { result });
   }
 
+  async getVendor(vendorId: string): Promise<Vendor | null> {
+    return this.prisma.vendor.findFirst({
+      where: {
+        id: vendorId,
+      },
+    });
+  }
+
   async getAllVendors(): Promise<Vendor[]> {
     this.logger.info('getting vendors');
     const vendors = await this.prisma.vendor.findMany();
