@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import { Vendor } from 'src/types';
+import type { Vendor } from '@prisma/client';
 import { LoggerService } from './logger.service';
+import { VendorWithoutId } from 'src/types';
 
 export interface IVendorService {}
 
@@ -12,9 +13,16 @@ export class VendorService implements IVendorService {
     this.prisma = new PrismaClient();
   }
 
-  async addVendor(vendor: Vendor) {
+  async addVendor(vendor: VendorWithoutId) {
     this.logger.info('adding vendor', { vendor });
-    const result = await this.prisma.vendors.create({ data: vendor });
+    const result = await this.prisma.vendor.create({ data: vendor });
     this.logger.info('finished adding vendor', { result });
+  }
+
+  async getAllVendors(): Promise<Vendor[]> {
+    this.logger.info('getting vendors');
+    const vendors = await this.prisma.vendor.findMany();
+    this.logger.info('found vendors', { vendors });
+    return vendors;
   }
 }

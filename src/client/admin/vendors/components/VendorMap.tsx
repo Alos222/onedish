@@ -1,14 +1,41 @@
 import { useRef, useState } from 'react';
 import { Box, Autocomplete, TextField, CircularProgress, Typography, Button, Divider } from '@mui/material';
+import type { VendorPlace } from '@prisma/client';
 import { useDebouncedCallback } from 'use-debounce';
 import usePlacesServices from '../hooks/usePlacesServices';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
-import { GooglePlacesKeys, OnedishPlaceResult } from 'src/types';
+import { GooglePlacesKeys } from 'src/types';
 
 type AutocompletePrediction = google.maps.places.AutocompletePrediction;
 
+const googlePlaceToVendorPlace = (googlePlace: google.maps.places.PlaceResult): VendorPlace => ({
+  formatted_address: googlePlace.formatted_address || null,
+  geometry: googlePlace.geometry
+    ? {
+        location: {
+          lat: googlePlace.geometry.location?.lat() || 0,
+          lng: googlePlace.geometry.location?.lng() || 0,
+        },
+        viewport: {
+          south: googlePlace.geometry.viewport?.getSouthWest().lat() || 0,
+          west: googlePlace.geometry.viewport?.getSouthWest().lng() || 0,
+          north: googlePlace.geometry.viewport?.getNorthEast().lat() || 0,
+          east: googlePlace.geometry.viewport?.getNorthEast().lat() || 0,
+        },
+      }
+    : null,
+  icon: googlePlace.icon || null,
+  name: googlePlace.name || null,
+  place_id: googlePlace.place_id || null,
+  price_level: googlePlace.price_level || null,
+  rating: googlePlace.rating || null,
+  url: googlePlace.url || null,
+  website: googlePlace.website || null,
+  html_attributions: googlePlace.html_attributions || [],
+});
+
 interface VendorMapProps {
-  onVendorSelected: (place: OnedishPlaceResult) => void;
+  onVendorSelected: (place: VendorPlace) => void;
 }
 
 /**
@@ -29,7 +56,7 @@ export default function VendorMap({ onVendorSelected }: VendorMapProps) {
   const [placeTextValue, setPlaceTextValue] = useState('');
 
   // The current place searched after selecting a value from the autocomplete
-  const [currentPlace, setCurrentPlace] = useState<OnedishPlaceResult | null>(null);
+  const [currentPlace, setCurrentPlace] = useState<VendorPlace | null>(null);
 
   // Ref to the element for showing content in the map info window
   const contentRef = useRef<HTMLDivElement>(null);
@@ -74,7 +101,7 @@ export default function VendorMap({ onVendorSelected }: VendorMapProps) {
 
         map?.panTo(place.geometry.location);
 
-        setCurrentPlace(place);
+        setCurrentPlace(googlePlaceToVendorPlace(place));
 
         /**
          * Opens the hidden content Box element
@@ -99,7 +126,7 @@ export default function VendorMap({ onVendorSelected }: VendorMapProps) {
    * After choosing a place on the map, this will auto fill in the place detail text fields
    * @param place
    */
-  const onSelectVendor = (place: OnedishPlaceResult) => {
+  const onSelectVendor = (place: VendorPlace) => {
     onVendorSelected(place);
   };
 

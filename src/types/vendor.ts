@@ -1,3 +1,8 @@
+import { Prisma } from '@prisma/client';
+
+/**
+ * List of keys that will be requested in the Google places API
+ */
 export const GooglePlacesKeys = [
   'place_id',
   'name',
@@ -8,28 +13,12 @@ export const GooglePlacesKeys = [
   'rating',
   'url',
   'website',
-  'html_attributions',
 ] as const;
 
 type GooglePlacesKeys = (typeof GooglePlacesKeys)[number];
 
-export interface OnedishPlaceResult extends Omit<Pick<google.maps.places.PlaceResult, GooglePlacesKeys>, 'geometry'> {
-  geometry: {
-    location: {
-      lat: number;
-      lng: number;
-    };
-    viewport: {
-      south: number;
-      west: number;
-      north: number;
-      east: number;
-    };
-  };
-}
-
-export interface Vendor {
-  place?: OnedishPlaceResult;
-  name: string;
-  address: string;
-}
+// Vendor data without the id, to be used in POST requests
+const vendorData = Prisma.validator<Prisma.VendorArgs>()({
+  select: { address: true, name: true, place: true },
+});
+export type VendorWithoutId = Prisma.VendorGetPayload<typeof vendorData>;

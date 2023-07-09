@@ -7,10 +7,6 @@ import { AddVendorResponse } from 'src/types/response/vendors/add-vendor.respons
 const vendorService = new VendorService();
 const logger = new LoggerService('VendorsAPIRoute');
 
-export async function GET(request: Request) {
-  return NextResponse.json({ data: 'hello' });
-}
-
 export async function POST(request: Request) {
   try {
     const data = (await request.json()) as AddVendorRequest;

@@ -5,13 +5,14 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from '@mui/icons-material/Close';
-import MapSelect from './VendorMap';
 import { Box, DialogContentText, Divider, IconButton, TextField, Typography } from '@mui/material';
-import { OnedishPlaceResult, Vendor } from 'src/types';
+import type { Vendor, VendorPlace } from '@prisma/client';
+import MapSelect from './VendorMap';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
 import { AddVendorResponse } from 'src/types/response/vendors/add-vendor.response';
 import { AddVendorRequest } from 'src/types/request/vendors/add-vendor.request';
+import { VendorWithoutId } from 'src/types';
 
 interface AddVendorDialogProps {}
 
@@ -22,9 +23,9 @@ export default function AddVendorDialog({}: AddVendorDialogProps) {
 
   // The name and address details of a vendor
   // Can be autofilled by selecting something on the map, or manually entered
-  const [placeName, setPlaceName] = useState<string | undefined>('');
-  const [placeAddress, setPlaceAddress] = useState<string | undefined>('');
-  const [place, setPlace] = useState<OnedishPlaceResult | undefined>();
+  const [placeName, setPlaceName] = useState<string | null>('');
+  const [placeAddress, setPlaceAddress] = useState<string | null>('');
+  const [place, setPlace] = useState<VendorPlace | null>(null);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -47,7 +48,7 @@ export default function AddVendorDialog({}: AddVendorDialogProps) {
       return;
     }
 
-    const vendor: Vendor = {
+    const vendor: VendorWithoutId = {
       place,
       name: placeName,
       address: placeAddress,
@@ -59,7 +60,6 @@ export default function AddVendorDialog({}: AddVendorDialogProps) {
     } else {
       displayInfo(`The vendor ${vendor.name} at ${vendor.address} was added!`);
     }
-    console.log(data);
 
     handleClose();
   };

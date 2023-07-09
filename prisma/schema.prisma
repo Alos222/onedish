@@ -7,9 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-type VendorsPlace {
+type VendorPlace {
   formatted_address String?
-  geometry          VendorsPlaceGeometry?
+  geometry          VendorPlaceGeometry?
   html_attributions String[]
   icon              String?
   name              String?
@@ -20,26 +20,28 @@ type VendorsPlace {
   website           String?
 }
 
-type VendorsPlaceGeometry {
-  location VendorsPlaceGeometryLocation?
-  viewport VendorsPlaceGeometryViewport?
+type VendorPlaceGeometry {
+  location VendorPlaceGeometryLocation?
+  viewport VendorPlaceGeometryViewport?
 }
 
-type VendorsPlaceGeometryLocation {
+type VendorPlaceGeometryLocation {
   lat Float
   lng Float
 }
 
-type VendorsPlaceGeometryViewport {
+type VendorPlaceGeometryViewport {
   east  Float
   north Float
   south Float
   west  Float
 }
 
-model vendors {
-  id      String        @id @default(auto()) @map("_id") @db.ObjectId
+model Vendor {
+  id      String       @id @default(auto()) @map("_id") @db.ObjectId
   address String
   name    String
-  place   VendorsPlace?
+  place   VendorPlace?
+
+  @@map("vendors")
 }

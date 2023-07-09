@@ -1,5 +1,5 @@
-import { Vendor } from '../../vendor';
+import { VendorWithoutId } from 'src/types/vendor';
 
 export interface AddVendorRequest {
-  vendor: Vendor;
+  vendor: VendorWithoutId;
 }
