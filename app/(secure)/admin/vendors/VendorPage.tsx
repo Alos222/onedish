@@ -1,7 +1,7 @@
 'use client';
 
-import { Box } from '@mui/material';
 import VendorsTable from 'src/client/admin/vendors/components/VendorsTable';
+import PageContainer from 'src/client/common/components/PageContainer';
 
 interface VendorPageProps {}
 
@@ -10,8 +10,8 @@ interface VendorPageProps {}
 // in the `pages` directory.
 export default function VendorPage({}: VendorPageProps) {
   return (
-    <Box>
+    <PageContainer title="Vendors" subtitle="Manage all of your vendors">
       <VendorsTable />
-    </Box>
+    </PageContainer>
   );
 }
