@@ -5,14 +5,12 @@ import { Vendor } from '@prisma/client';
 import AddVendorDialog from 'src/client/admin/vendors/components/AddVendorDialog';
 import VendorsTable from 'src/client/admin/vendors/components/VendorsTable';
 
-interface VendorPageProps {
-  vendors: Vendor[];
-}
+interface VendorPageProps {}
 
 // This is a Client Component. It receives data as props and
 // has access to state and effects just like Page components
 // in the `pages` directory.
-export default function VendorPage({ vendors }: VendorPageProps) {
+export default function VendorPage({}: VendorPageProps) {
   return (
     <Box>
       <AddVendorDialog />
