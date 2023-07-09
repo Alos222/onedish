@@ -5,14 +5,18 @@ import { useNotifications } from './useNotifications';
 
 const baseApiUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
 
-export const useApiRequest = (url: string) => {
+export const useApiRequest = (apiUrl: string) => {
   const [loading, setLoading] = useState(false);
 
-  const doFetch = async <Request, Response>(opts: RequestInit): Promise<ApiResponse<Response>> => {
+  const doFetch = async <Request, Response>(url?: string, opts?: RequestInit): Promise<ApiResponse<Response>> => {
     setLoading(true);
     try {
-      const apiUrl = `${baseApiUrl}/${url}`;
-      const response = await fetch(apiUrl, opts);
+      let fullUrl = `${baseApiUrl}/${apiUrl}`;
+      if (url) {
+        fullUrl += `${url}`;
+      }
+      console.log({ baseApiUrl, apiUrl, url, fullUrl });
+      const response = await fetch(fullUrl, opts);
 
       const result = (await response.json()) as ApiResponse<Response>;
 
@@ -38,13 +42,18 @@ export const useApiRequest = (url: string) => {
     }
   };
 
+  const get = async <Response>(url: string): Promise<ApiResponse<Response>> => {
+    const result = await doFetch<Request, Response>(url);
+    return result;
+  };
+
   const post = async <Request, Response>(requestData: Request): Promise<ApiResponse<Response>> => {
-    const result = await doFetch<Request, Response>({
+    const result = await doFetch<Request, Response>('', {
       body: JSON.stringify(requestData),
       method: 'POST',
     });
     return result;
   };
 
-  return { post, loading };
+  return { get, post, loading };
 };

@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client';
-import type { Vendor } from '@prisma/client';
+import type { Prisma, Vendor } from '@prisma/client';
 import { LoggerService } from './logger.service';
 import { VendorWithoutId } from 'src/types';
+import { DefaultArgs } from '@prisma/client/runtime';
 
 export interface IVendorService {}
 
@@ -24,5 +25,42 @@ export class VendorService implements IVendorService {
     const vendors = await this.prisma.vendor.findMany();
     this.logger.info('found vendors', { vendors });
     return vendors;
+  }
+
+  async getPaginatedResults(
+    sortType: string | undefined | null,
+    column: string,
+    searchQuery: string,
+    skip: number,
+    take: number
+  ) {
+    const results = await this.prisma.$transaction([
+      this.prisma.vendor.count({
+        where: {
+          [column]: {
+            mode: 'insensitive',
+            contains: searchQuery,
+          },
+        },
+      }),
+      this.prisma.vendor.findMany({
+        skip,
+        take,
+        // where: {
+        //   [column]: {
+        //     mode: 'insensitive',
+        //     contains: searchQuery,
+        //   },
+        // },
+        orderBy: {
+          [column]: sortType ?? 'asc',
+        },
+      }),
+    ]);
+
+    return {
+      total: results[0] ?? 0,
+      data: results[1],
+    };
   }
 }

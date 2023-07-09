@@ -3,7 +3,7 @@
 import { Box } from '@mui/material';
 import { Vendor } from '@prisma/client';
 import AddVendorDialog from 'src/client/admin/vendors/components/AddVendorDialog';
-import VendorList from 'src/client/admin/vendors/components/VendorsList';
+import VendorsTable from 'src/client/admin/vendors/components/VendorsTable';
 
 interface VendorPageProps {
   vendors: Vendor[];
@@ -16,7 +16,7 @@ export default function VendorPage({ vendors }: VendorPageProps) {
   return (
     <Box>
       <AddVendorDialog />
-      <VendorList vendors={vendors} />
+      <VendorsTable />
     </Box>
   );
 }
