@@ -5,8 +5,20 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, DialogContentText, Divider, IconButton, TextField, Typography } from '@mui/material';
-import type { Vendor, VendorPlace } from '@prisma/client';
+import {
+  Box,
+  Checkbox,
+  DialogContentText,
+  Divider,
+  FormControlLabel,
+  IconButton,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
+  TextField,
+  Typography,
+} from '@mui/material';
+import type { Vendor, VendorPhoto, VendorPlace } from '@prisma/client';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
 import { AddVendorResponse } from 'src/types/response/vendors/add-vendor.response';
@@ -37,9 +49,11 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
 
   // The name and address details of a vendor
   // Can be autofilled by selecting something on the map, or manually entered
-  const [placeName, setPlaceName] = useState<string | null>(vendor?.name || null);
-  const [placeAddress, setPlaceAddress] = useState<string | null>(vendor?.address || null);
+  const [placeName, setPlaceName] = useState<string | null>(vendor?.name || '');
+  const [placeAddress, setPlaceAddress] = useState<string | null>(vendor?.address || '');
   const [place, setPlace] = useState<VendorPlace | null>(vendor?.place || null);
+  const [vendorImage, setVendorImage] = useState<VendorPhoto | null>(vendor?.image || null);
+  const [oneDishImage, setOneDishImage] = useState<VendorPhoto | null>(vendor?.oneDish || null);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -66,6 +80,8 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
       place,
       name: placeName,
       address: placeAddress,
+      oneDish: oneDishImage,
+      image: vendorImage,
     };
 
     let response: ApiResponse<string>;
@@ -155,6 +171,53 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
               value={placeAddress}
               onChange={(e) => setPlaceAddress(e.target.value)}
             />
+
+            {place?.photos.length && (
+              <ImageList sx={{ height: 500 }} cols={3} gap={8}>
+                {place.photos.map((photo) => (
+                  <ImageListItem key={photo.url}>
+                    <img src={photo.url} srcSet={photo.url} alt={`Photo of ${placeName}`} loading="lazy" />
+                    <ImageListItemBar
+                      title={
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={photo.url === vendorImage?.url}
+                              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                if (photo.url === vendorImage?.url) {
+                                  setVendorImage(null);
+                                } else {
+                                  setVendorImage(photo);
+                                }
+                              }}
+                            />
+                          }
+                          label="Use for vendor image"
+                        />
+                      }
+                      subtitle={
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={photo.url === oneDishImage?.url}
+                              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                if (photo.url === oneDishImage?.url) {
+                                  setOneDishImage(null);
+                                } else {
+                                  setOneDishImage(photo);
+                                }
+                              }}
+                            />
+                          }
+                          label="Use for OneDish"
+                        />
+                      }
+                      position="below"
+                    />
+                  </ImageListItem>
+                ))}
+              </ImageList>
+            )}
           </Box>
         </DialogContent>
         <DialogActions>

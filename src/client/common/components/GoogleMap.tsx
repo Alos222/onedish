@@ -35,6 +35,13 @@ const googlePlaceToVendorPlace = (googlePlace: google.maps.places.PlaceResult): 
   url: googlePlace.url || null,
   website: googlePlace.website || null,
   html_attributions: googlePlace.html_attributions || [],
+  photos:
+    googlePlace.photos?.map((photo) => ({
+      url: photo.getUrl(),
+      height: photo.height,
+      width: photo.width,
+      html_attributions: photo.html_attributions,
+    })) || [],
 });
 
 interface GoogleMapProps {

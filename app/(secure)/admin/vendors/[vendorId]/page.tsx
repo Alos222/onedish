@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 export default async function App({ params: { vendorId } }: { params: { vendorId: string } }) {
   const vendor = await new VendorService().getVendor(vendorId);
 
-  console.log(vendor);
   if (!vendor) {
     // TODO Fix this
     return <div>Could not find vendor</div>;

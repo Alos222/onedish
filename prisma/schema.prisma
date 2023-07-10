@@ -18,6 +18,7 @@ type VendorPlace {
   rating            Float?
   url               String?
   website           String?
+  photos            VendorPhoto[]
 }
 
 type VendorPlaceGeometry {
@@ -37,10 +38,19 @@ type VendorPlaceGeometryViewport {
   west  Float
 }
 
+type VendorPhoto {
+  url               String
+  height            Float
+  width             Float
+  html_attributions String[]
+}
+
 model Vendor {
   id      String       @id @default(auto()) @map("_id") @db.ObjectId
   address String
   name    String
+  image   VendorPhoto?
+  oneDish VendorPhoto?
   place   VendorPlace?
 
   @@map("vendors")

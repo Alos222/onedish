@@ -15,7 +15,6 @@ export const useApiRequest = (apiUrl: string) => {
       if (url) {
         fullUrl += `${url}`;
       }
-      console.log({ baseApiUrl, apiUrl, url, fullUrl });
       const response = await fetch(fullUrl, opts);
 
       const result = (await response.json()) as ApiResponse<Response>;

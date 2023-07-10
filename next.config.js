@@ -12,6 +12,11 @@ const nextConfig = {
         hostname: 'maps.gstatic.com',
         port: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'maps.googleapis.com',
+        port: '',
+      },
     ],
   },
 };
