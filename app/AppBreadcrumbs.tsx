@@ -34,13 +34,20 @@ export default function AppBreadcrumbs() {
           return null;
         }
 
-        const route = routes.find((route) => route.href === pathHref);
+        const route = routes.find((route) => {
+          if (route.href === pathHref) return true;
+          if (route.regex) {
+            console.log(route, pathHref);
+            return new RegExp(route.href).test(pathHref);
+          }
+          return false;
+        });
         if (!route) {
-          // console.error('Could not find route for breadcrumb', {
-          //   pathHref,
-          //   value,
-          //   pathnames,
-          // });
+          console.error('Could not find route for breadcrumb', {
+            pathHref,
+            value,
+            pathnames,
+          });
           return null;
         }
 

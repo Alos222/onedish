@@ -1,7 +1,6 @@
 'use client';
 
-import { Divider, Paper } from '@mui/material';
-import { Box } from '@mui/system';
+import { Box, Divider, Paper } from '@mui/material';
 import AppBreadcrumbs from 'app/AppBreadcrumbs';
 
 interface AppWrapperProps {
