@@ -5,27 +5,17 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from '@mui/icons-material/Close';
-import {
-  Box,
-  Checkbox,
-  DialogContentText,
-  Divider,
-  FormControlLabel,
-  IconButton,
-  ImageList,
-  ImageListItem,
-  ImageListItemBar,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, DialogContentText, Divider, Grid, IconButton, Typography } from '@mui/material';
 import type { Vendor, VendorPhoto, VendorPlace } from '@prisma/client';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
-import { AddVendorResponse } from 'src/types/response/vendors/add-vendor.response';
 import { AddVendorRequest } from 'src/types/request/vendors/add-vendor.request';
 import { VendorWithoutId } from 'src/types';
 import GoogleMap from 'src/client/common/components/GoogleMap';
 import { ApiResponse } from 'src/types/response/api-response';
+import OneDishUpload, { FileData } from 'src/client/common/components/OneDishUpload';
+import ODTextField from 'src/client/common/components/ODTextField';
+import OneDishCard from 'src/client/common/components/OneDishCard';
 
 interface ManageVendorDialogProps {
   /**
@@ -54,6 +44,8 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   const [place, setPlace] = useState<VendorPlace | null>(vendor?.place || null);
   const [vendorImage, setVendorImage] = useState<VendorPhoto | null>(vendor?.image || null);
   const [oneDishImage, setOneDishImage] = useState<VendorPhoto | null>(vendor?.oneDish || null);
+
+  const [oneDishes, setOneDishes] = useState<FileData[]>([]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -106,7 +98,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
       <Button variant="outlined" onClick={handleClickOpen}>
         {isEditing ? 'Edit Vendor' : 'Add Vendor'}
       </Button>
-      <Dialog open={open} fullWidth maxWidth="xl">
+      <Dialog open={open} fullWidth maxWidth="lg">
         <DialogTitle>
           Add vendor{' '}
           <IconButton
@@ -150,74 +142,35 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
               Restaurant details
             </Typography>
 
-            <TextField
-              margin="dense"
+            <ODTextField
               id="placeName"
               label="Name"
               placeholder="Name of the restaurant"
-              type="text"
-              fullWidth
-              variant="standard"
               value={placeName}
               onChange={(e) => setPlaceName(e.target.value)}
             />
-            <TextField
+            <ODTextField
               id="placeAddress"
               label="Address"
               placeholder="Address of the restaurant"
-              type="text"
-              fullWidth
-              variant="standard"
               value={placeAddress}
               onChange={(e) => setPlaceAddress(e.target.value)}
+              sx={{ mb: 3 }}
             />
 
-            {place?.photos.length && (
-              <ImageList sx={{ height: 500 }} cols={3} gap={8}>
-                {place.photos.map((photo) => (
-                  <ImageListItem key={photo.url}>
-                    <img src={photo.url} srcSet={photo.url} alt={`Photo of ${placeName}`} loading="lazy" />
-                    <ImageListItemBar
-                      title={
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={photo.url === vendorImage?.url}
-                              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                if (photo.url === vendorImage?.url) {
-                                  setVendorImage(null);
-                                } else {
-                                  setVendorImage(photo);
-                                }
-                              }}
-                            />
-                          }
-                          label="Use for vendor image"
-                        />
-                      }
-                      subtitle={
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={photo.url === oneDishImage?.url}
-                              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                if (photo.url === oneDishImage?.url) {
-                                  setOneDishImage(null);
-                                } else {
-                                  setOneDishImage(photo);
-                                }
-                              }}
-                            />
-                          }
-                          label="Use for OneDish"
-                        />
-                      }
-                      position="below"
-                    />
-                  </ImageListItem>
-                ))}
-              </ImageList>
-            )}
+            <OneDishUpload vendor={vendor} onConfirm={(data) => setOneDishes((prev) => [...prev, data])} />
+
+            <Grid container mt={2}>
+              {oneDishes.map((oneDish) => (
+                <Grid item xs={12} sm={6} md={4}>
+                  <OneDishCard
+                    key={oneDish.id}
+                    data={oneDish}
+                    onDelete={() => setOneDishes((prev) => prev.filter((o) => o.id !== oneDish.id))}
+                  />
+                </Grid>
+              ))}
+            </Grid>
           </Box>
         </DialogContent>
         <DialogActions>
