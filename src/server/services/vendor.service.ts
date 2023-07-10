@@ -18,6 +18,7 @@ export class VendorService implements IVendorService {
     this.logger.info('adding vendor', { vendor });
     const result = await this.prisma.vendor.create({ data: vendor });
     this.logger.info('finished adding vendor', { result });
+    return result.id;
   }
 
   async getVendor(vendorId: string): Promise<Vendor | null> {

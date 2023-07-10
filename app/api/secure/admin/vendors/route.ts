@@ -31,9 +31,9 @@ export async function POST(request: Request) {
     const data = (await request.json()) as AddVendorRequest;
 
     logger.info('POST vendors', { data });
-    await vendorService.addVendor(data.vendor);
+    const vendorId = await vendorService.addVendor(data.vendor);
 
-    const response: AddVendorResponse = { data: true };
+    const response: AddVendorResponse = { data: vendorId };
     return NextResponse.json(response);
   } catch (e) {
     console.error(e);

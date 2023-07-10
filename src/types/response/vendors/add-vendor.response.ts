@@ -1,3 +1,3 @@
 import { ApiResponse } from '../api-response';
 
-export type AddVendorResponse = ApiResponse<boolean>;
+export type AddVendorResponse = ApiResponse<string>;

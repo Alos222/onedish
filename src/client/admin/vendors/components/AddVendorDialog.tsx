@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, DialogContentText, Divider, IconButton, TextField, Typography } from '@mui/material';
-import type { VendorPlace } from '@prisma/client';
+import type { Vendor, VendorPlace } from '@prisma/client';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
 import { AddVendorResponse } from 'src/types/response/vendors/add-vendor.response';
@@ -14,9 +14,11 @@ import { AddVendorRequest } from 'src/types/request/vendors/add-vendor.request';
 import { VendorWithoutId } from 'src/types';
 import GoogleMap from 'src/client/common/components/GoogleMap';
 
-interface AddVendorDialogProps {}
+interface AddVendorDialogProps {
+  onVendorAdded: (vendor: Vendor) => void;
+}
 
-export default function AddVendorDialog({}: AddVendorDialogProps) {
+export default function AddVendorDialog({ onVendorAdded }: AddVendorDialogProps) {
   const { post } = useApiRequest('secure/admin/vendors');
   const { displayInfo, displayError } = useNotifications();
   const [open, setOpen] = useState(false);
@@ -54,14 +56,16 @@ export default function AddVendorDialog({}: AddVendorDialogProps) {
       address: placeAddress,
     };
 
-    const data = await post<AddVendorRequest, AddVendorResponse>({ vendor });
-    if (data.error) {
-      displayError(data.error);
-    } else {
+    const response = await post<AddVendorRequest, string>({ vendor });
+    if (response.error) {
+      displayError(response.error);
+    } else if (response.data) {
+      onVendorAdded({ ...vendor, id: response.data });
       displayInfo(`The vendor ${vendor.name} at ${vendor.address} was added!`);
+      handleClose();
+    } else {
+      displayError('Could not create vendor...');
     }
-
-    handleClose();
   };
 
   return (

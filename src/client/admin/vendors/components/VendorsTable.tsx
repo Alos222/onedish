@@ -51,7 +51,6 @@ export default function VendorsTable() {
       return;
     }
     const { data: vendors, total } = response.data;
-    console.log({ response, vendors });
     setVendors(vendors);
     setTotal(total);
   };
@@ -63,7 +62,7 @@ export default function VendorsTable() {
       headCells={headCells}
       initialOrderBy="name"
       loading={loading}
-      Actions={<AddVendorDialog />}
+      Actions={<AddVendorDialog onVendorAdded={(vendor) => setVendors((prev) => [vendor, ...prev])} />}
       onPagePropsChange={onPagePropsChange}
     >
       {(item) => {
