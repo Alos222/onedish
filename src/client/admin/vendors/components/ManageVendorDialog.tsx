@@ -5,17 +5,19 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, DialogContentText, Divider, Grid, IconButton, Typography } from '@mui/material';
+import { Box, DialogContentText, Divider, Grid, IconButton, Paper, Typography } from '@mui/material';
 import type { Vendor, VendorPhoto, VendorPlace } from '@prisma/client';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
 import { AddVendorRequest } from 'src/types/request/vendors/add-vendor.request';
-import { VendorWithoutId } from 'src/types';
+import { VendorTier, VendorWithoutId } from 'src/types';
 import GoogleMap from 'src/client/common/components/GoogleMap';
 import { ApiResponse } from 'src/types/response/api-response';
 import OneDishUpload, { FileData } from 'src/client/common/components/OneDishUpload';
 import ODTextField from 'src/client/common/components/ODTextField';
 import OneDishCard from 'src/client/common/components/OneDishCard';
+import OneDishTier from 'src/client/common/components/OneDishTier';
+import PhotoListSelect from 'src/client/common/components/PhotoListSelect';
 
 interface ManageVendorDialogProps {
   /**
@@ -42,8 +44,9 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   const [placeName, setPlaceName] = useState<string | null>(vendor?.name || '');
   const [placeAddress, setPlaceAddress] = useState<string | null>(vendor?.address || '');
   const [place, setPlace] = useState<VendorPlace | null>(vendor?.place || null);
-  const [vendorImage, setVendorImage] = useState<VendorPhoto | null>(vendor?.image || null);
-  const [oneDishImage, setOneDishImage] = useState<VendorPhoto | null>(vendor?.oneDish || null);
+  const [vendorImage, setVendorImage] = useState<VendorPhoto | null>(vendor?.vendorImage || null);
+  // TODO Check this casting...
+  const [selectedTier, setSelectedTier] = useState<VendorTier | null>((vendor?.tier as VendorTier) || null);
 
   const [oneDishes, setOneDishes] = useState<FileData[]>([]);
 
@@ -64,7 +67,11 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
       displayError('You need to provide an address');
       isError = true;
     }
-    if (isError || !placeName || !placeAddress) {
+    if (!selectedTier) {
+      displayError('You need to select a tier');
+      isError = true;
+    }
+    if (isError || !placeName || !placeAddress || !selectedTier) {
       return;
     }
 
@@ -72,8 +79,9 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
       place,
       name: placeName,
       address: placeAddress,
-      oneDish: oneDishImage,
-      image: vendorImage,
+      tier: selectedTier,
+      oneDishes: [],
+      vendorImage,
     };
 
     let response: ApiResponse<string>;
@@ -93,14 +101,33 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
     }
   };
 
+  const text = isEditing ? 'Edit Vendor' : 'Add Vendor';
+
+  let allowedOneDishes: number;
+  switch (selectedTier) {
+    case 'first':
+    default:
+      allowedOneDishes = 1;
+      break;
+    case 'second':
+      allowedOneDishes = 6;
+      break;
+    case 'third':
+      allowedOneDishes = 12;
+      break;
+  }
+  const canSelectMore = oneDishes.length < allowedOneDishes;
+  const restrictedOneDishes = oneDishes.slice(0, allowedOneDishes);
+  const selectedOneDishesCount = restrictedOneDishes.length;
+
   return (
     <>
       <Button variant="outlined" onClick={handleClickOpen}>
-        {isEditing ? 'Edit Vendor' : 'Add Vendor'}
+        {text}
       </Button>
       <Dialog open={open} fullWidth maxWidth="lg">
         <DialogTitle>
-          Add vendor{' '}
+          {text}
           <IconButton
             aria-label="close"
             onClick={handleClose}
@@ -115,53 +142,109 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
           </IconButton>
         </DialogTitle>
         <DialogContent sx={{ mt: 2 }}>
-          <DialogContentText>Search for a restaurant to quickly fill details</DialogContentText>
-          <GoogleMap
-            place={vendor?.place}
-            searchable
-            ContentInfoActions={(place) => (
-              <Button
-                variant="outlined"
-                sx={{ mt: 1 }}
-                onClick={() => {
-                  if (place) {
-                    setPlaceName(place.name);
-                    setPlaceAddress(place.formatted_address);
-                    setPlace(place);
-                  }
-                }}
-              >
-                Choose
-              </Button>
-            )}
-          />
+          <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h5" color="primary">
+              Restaurant details and tier
+            </Typography>
+            <Typography variant="body1" color="secondary">
+              Search for a restaurant to quickly fill details
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={5}>
+                <ODTextField
+                  id="placeName"
+                  label="Name"
+                  placeholder="Name of the restaurant"
+                  value={placeName}
+                  onChange={(e) => setPlaceName(e.target.value)}
+                />
+                <ODTextField
+                  id="placeAddress"
+                  label="Address"
+                  placeholder="Address of the restaurant"
+                  value={placeAddress}
+                  onChange={(e) => setPlaceAddress(e.target.value)}
+                  sx={{ mb: 3 }}
+                />
 
-          <Box pt={2}>
-            <Divider />
-            <Typography variant="body1" color="secondary" pt={2}>
-              Restaurant details
+                <Typography variant="body1" color="primary">
+                  Tier
+                </Typography>
+                <OneDishTier
+                  tier="first"
+                  tierDescription="With the first tier, you get a single OneDish"
+                  selectedTier={selectedTier}
+                  onTierSelected={(tier) => setSelectedTier(tier)}
+                />
+
+                <OneDishTier
+                  tier="second"
+                  tierDescription="With the second tier, you get 6 OneDish selections"
+                  selectedTier={selectedTier}
+                  onTierSelected={(tier) => setSelectedTier(tier)}
+                />
+
+                <OneDishTier
+                  tier="third"
+                  tierDescription="With the third tier, you get 12 OneDish selections"
+                  selectedTier={selectedTier}
+                  onTierSelected={(tier) => setSelectedTier(tier)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={7}>
+                <GoogleMap
+                  place={vendor?.place}
+                  searchable
+                  ContentInfoActions={(place) => (
+                    <Button
+                      variant="outlined"
+                      sx={{ mt: 1 }}
+                      onClick={() => {
+                        if (place) {
+                          setPlaceName(place.name);
+                          setPlaceAddress(place.formatted_address);
+                          setPlace(place);
+                        }
+                      }}
+                    >
+                      Choose
+                    </Button>
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1" color="primary">
+                  Restaurant Image
+                </Typography>
+                <PhotoListSelect
+                  photos={place?.photos || []}
+                  selectedImage={vendorImage}
+                  label="Use for Restaurant"
+                  onPhotoSelected={(photo) => {
+                    setVendorImage(photo);
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+
+          <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+            <Typography gutterBottom variant="h5" component="div" color="primary">
+              Choose OneDish ({`${selectedOneDishesCount}/${allowedOneDishes}`})
             </Typography>
 
-            <ODTextField
-              id="placeName"
-              label="Name"
-              placeholder="Name of the restaurant"
-              value={placeName}
-              onChange={(e) => setPlaceName(e.target.value)}
-            />
-            <ODTextField
-              id="placeAddress"
-              label="Address"
-              placeholder="Address of the restaurant"
-              value={placeAddress}
-              onChange={(e) => setPlaceAddress(e.target.value)}
-              sx={{ mb: 3 }}
-            />
+            {canSelectMore && (
+              <>
+                <Typography gutterBottom variant="body1" component="div" color="secondary">
+                  Select an image from Google on the right, or upload a file
+                </Typography>
+                <OneDishUpload vendor={vendor} onConfirm={(data) => setOneDishes((prev) => [...prev, data])} />
+                <Divider sx={{ pt: 2 }} />
+              </>
+            )}
 
-            <OneDishUpload vendor={vendor} onConfirm={(data) => setOneDishes((prev) => [...prev, data])} />
-
-            <Grid container mt={2}>
-              {oneDishes.map((oneDish) => (
+            <Grid container mt={2} spacing={2}>
+              {restrictedOneDishes.map((oneDish) => (
                 <Grid item xs={12} sm={6} md={4}>
                   <OneDishCard
                     key={oneDish.id}
@@ -171,7 +254,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
                 </Grid>
               ))}
             </Grid>
-          </Box>
+          </Paper>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

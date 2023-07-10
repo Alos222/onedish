@@ -18,8 +18,10 @@ export const GooglePlacesKeys = [
 
 type GooglePlacesKeys = (typeof GooglePlacesKeys)[number];
 
+export type VendorTier = 'first' | 'second' | 'third';
+
 // Vendor data without the id, to be used in POST requests
 const vendorData = Prisma.validator<Prisma.VendorArgs>()({
-  select: { address: true, name: true, place: true, oneDish: true, image: true },
+  select: { address: true, name: true, place: true, oneDishes: true, tier: true, vendorImage: true },
 });
 export type VendorWithoutId = Prisma.VendorGetPayload<typeof vendorData>;

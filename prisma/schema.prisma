@@ -46,12 +46,13 @@ type VendorPhoto {
 }
 
 model Vendor {
-  id      String       @id @default(auto()) @map("_id") @db.ObjectId
-  address String
-  name    String
-  image   VendorPhoto?
-  oneDish VendorPhoto?
-  place   VendorPlace?
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  address     String
+  name        String
+  vendorImage VendorPhoto?
+  place       VendorPlace?
+  tier        String?
+  oneDishes   VendorPlace[]
 
   @@map("vendors")
 }

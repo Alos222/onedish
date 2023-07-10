@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Box,
@@ -17,6 +17,7 @@ import PhotoIcon from '@mui/icons-material/Photo';
 import ODTextField from './ODTextField';
 import { Vendor, VendorPhoto } from '@prisma/client';
 import { useNotifications } from '../hooks/useNotifications';
+import PhotoListSelect from './PhotoListSelect';
 
 export type FileData = {
   id: string;
@@ -26,45 +27,6 @@ export type FileData = {
   title: string;
   description?: string;
 };
-
-interface PhotoListSelectProps {
-  photos: VendorPhoto[];
-  selectedImage: VendorPhoto | null;
-  onPhotoSelected: (photo: VendorPhoto | null) => void;
-}
-
-function PhotoListSelect({ photos, selectedImage, onPhotoSelected }: PhotoListSelectProps) {
-  return (
-    <Grid container spacing={2} sx={{ maxHeight: 500, overflowY: 'auto' }}>
-      {photos.map((photo) => (
-        <Grid item>
-          <Card key={photo.url}>
-            <CardMedia image={photo.url} sx={{ width: 200, height: 150 }} />
-            <CardActions>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={photo.url === selectedImage?.url}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                      let image: VendorPhoto | null;
-                      if (photo.url === selectedImage?.url) {
-                        image = null;
-                      } else {
-                        image = photo;
-                      }
-                      onPhotoSelected(image);
-                    }}
-                  />
-                }
-                label="Use for OneDish"
-              />
-            </CardActions>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
-  );
-}
 
 interface FileUploadProps {
   vendor?: Vendor;
@@ -77,9 +39,11 @@ export default function OneDishUpload({ vendor, onConfirm }: FileUploadProps) {
   const [description, setDescription] = useState<string>('');
   const [file, setFile] = useState<File | undefined>();
   const [fileString, setFileString] = useState<string | undefined>();
-  const [selectedImage, setSelectedImage] = useState<VendorPhoto | null>(vendor?.oneDish || null);
+  const [selectedImage, setSelectedImage] = useState<VendorPhoto | null>(null);
   const [url, setUrl] = useState<string | undefined>();
   const [id, setId] = useState(uuidv4());
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const { displayError } = useNotifications();
 
@@ -114,79 +78,84 @@ export default function OneDishUpload({ vendor, onConfirm }: FileUploadProps) {
   };
 
   return (
-    <Paper>
-      <Grid container columnSpacing={2}>
-        <Grid item xs={12} sm={5}>
-          {fileString && <CardMedia sx={{ height: 300 }} image={fileString} title="oneDish" />}
-          {url && <CardMedia sx={{ height: 300 }} image={url} title="oneDish" />}
+    <Grid container columnSpacing={2}>
+      <Grid item xs={12} sm={5}>
+        <CardContent>
+          {fileString && <CardMedia sx={{ height: 300, borderRadius: 2 }} image={fileString} title="oneDish" />}
+          {url && <CardMedia sx={{ height: 300, borderRadius: 2 }} image={url} title="oneDish" />}
           {!fileString && !url && (
             <Box display="flex" alignContent="center" justifyContent="center" p={4}>
               <PhotoIcon />
             </Box>
           )}
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div" color="primary">
-              Choose OneDish
-            </Typography>
-            <Typography gutterBottom variant="body1" component="div" color="secondary">
-              Select an image from Google on the right, or upload a file
-            </Typography>
-            <Button component="label" variant="outlined">
-              Upload File
-              <input
-                type="file"
-                hidden
-                onChange={(event) => {
-                  if (event.target.files) {
-                    const selectedFile = event.target.files[0];
-                    setFile(selectedFile);
+          <Button component="label" variant="outlined" sx={{ mt: 2 }}>
+            Upload File
+            <input
+              type="file"
+              hidden
+              ref={inputRef}
+              onChange={(event) => {
+                if (event.target.files) {
+                  const selectedFile = event.target.files[0];
+                  setFile(selectedFile);
 
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                      if (e.target?.result) {
-                        setFileString(e.target?.result.toString());
-                      }
-                    };
-                    reader.readAsDataURL(selectedFile);
-                  }
-                }}
-              />
-            </Button>
+                  // Clear out any image selections
+                  setSelectedImage(null);
+                  setUrl(undefined);
 
-            <ODTextField
-              id="title"
-              label="Title"
-              placeholder="Title of the OneDish"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-
-            <ODTextField
-              id="description"
-              label="Description"
-              placeholder="Description of the OneDish"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </CardContent>
-          <CardActions>
-            <Button onClick={confirmOneDish}>Confirm OneDish</Button>
-          </CardActions>
-        </Grid>
-
-        {vendor && (
-          <Grid item xs={12} sm={7} sx={{ overflowY: 'auto' }}>
-            <PhotoListSelect
-              photos={vendor.place?.photos || []}
-              selectedImage={selectedImage}
-              onPhotoSelected={(photo) => {
-                setSelectedImage(photo);
-                setUrl(photo?.url);
+                  const reader = new FileReader();
+                  reader.onload = function (e) {
+                    if (e.target?.result) {
+                      setFileString(e.target?.result.toString());
+                    }
+                  };
+                  reader.readAsDataURL(selectedFile);
+                }
               }}
             />
-          </Grid>
-        )}
+          </Button>
+
+          <ODTextField
+            id="title"
+            label="Title"
+            placeholder="Title of the OneDish"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+
+          <ODTextField
+            id="description"
+            label="Description"
+            placeholder="Description of the OneDish"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </CardContent>
+        <CardActions>
+          <Button onClick={confirmOneDish}>Add OneDish</Button>
+        </CardActions>
       </Grid>
-    </Paper>
+
+      {vendor && (
+        <Grid item xs={12} sm={7} sx={{ overflowY: 'auto' }}>
+          <PhotoListSelect
+            photos={vendor.place?.photos || []}
+            selectedImage={selectedImage}
+            label="Use for OneDish"
+            onPhotoSelected={(photo) => {
+              setSelectedImage(photo);
+              setUrl(photo?.url);
+
+              // Clear out any file uploads
+              setFile(undefined);
+              setFileString(undefined);
+              if (inputRef.current) {
+                inputRef.current.value = '';
+              }
+            }}
+          />
+        </Grid>
+      )}
+    </Grid>
   );
 }

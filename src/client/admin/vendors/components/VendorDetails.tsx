@@ -11,13 +11,13 @@ interface VendorDetailsProps {
 
 export default function VendorDetails({ vendor: v }: VendorDetailsProps) {
   const [vendor, setVendor] = useState(v);
-  const { name, address, image, oneDish, place } = vendor;
+  const { name, address, vendorImage, place } = vendor;
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={4}>
         <Card sx={{ maxWidth: 450 }}>
-          {oneDish && <CardMedia sx={{ height: 200 }} image={oneDish.url} title="Vendor OneDish" />}
+          {/* {oneDish && <CardMedia sx={{ height: 200 }} image={oneDish.url} title="Vendor OneDish" />} */}
           <CardContent>
             {!place && (
               <>
@@ -32,7 +32,7 @@ export default function VendorDetails({ vendor: v }: VendorDetailsProps) {
             {place && <PlaceDetails place={place} />}
             <ManageVendorDialog vendor={vendor} onVendor={(vendor) => setVendor(vendor)} />
           </CardContent>
-          {image && <CardMedia sx={{ height: 200 }} image={image.url} title="Vendor image" />}
+          {vendorImage && <CardMedia sx={{ height: 200 }} image={vendorImage.url} title="Vendor image" />}
         </Card>
       </Grid>
       <Grid item xs={12} sm={8}>
