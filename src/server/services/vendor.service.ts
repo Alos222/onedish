@@ -21,6 +21,13 @@ export class VendorService implements IVendorService {
     return result.id;
   }
 
+  async updateVendor(vendorId: string, vendor: VendorWithoutId) {
+    this.logger.info('update vendor', { vendor });
+    const result = await this.prisma.vendor.update({ where: { id: vendorId }, data: vendor });
+    this.logger.info('finished updating vendor', { result });
+    return result.id;
+  }
+
   async getVendor(vendorId: string): Promise<Vendor | null> {
     return this.prisma.vendor.findFirst({
       where: {

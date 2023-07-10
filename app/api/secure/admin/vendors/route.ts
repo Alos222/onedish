@@ -38,6 +38,6 @@ export async function POST(request: Request) {
   } catch (e) {
     console.error(e);
 
-    return NextResponse.json({ error: 'Could not save vendor' }, { status: 400 });
+    return NextResponse.json({ error: 'Could not create vendor' }, { status: 400 });
   }
 }

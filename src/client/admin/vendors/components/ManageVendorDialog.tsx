@@ -13,21 +13,33 @@ import { AddVendorResponse } from 'src/types/response/vendors/add-vendor.respons
 import { AddVendorRequest } from 'src/types/request/vendors/add-vendor.request';
 import { VendorWithoutId } from 'src/types';
 import GoogleMap from 'src/client/common/components/GoogleMap';
+import { ApiResponse } from 'src/types/response/api-response';
 
-interface AddVendorDialogProps {
-  onVendorAdded: (vendor: Vendor) => void;
+interface ManageVendorDialogProps {
+  /**
+   * Provide a vendor to edit. If this is empty, you can create a new vendor
+   */
+  vendor?: Vendor;
+
+  /**
+   * Called when a vendor is added or edited
+   * @param vendor
+   * @returns
+   */
+  onVendor: (vendor: Vendor) => void;
 }
 
-export default function AddVendorDialog({ onVendorAdded }: AddVendorDialogProps) {
-  const { post } = useApiRequest('secure/admin/vendors');
+export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDialogProps) {
+  const isEditing = !!vendor;
+  const { post, patch } = useApiRequest('secure/admin/vendors');
   const { displayInfo, displayError } = useNotifications();
   const [open, setOpen] = useState(false);
 
   // The name and address details of a vendor
   // Can be autofilled by selecting something on the map, or manually entered
-  const [placeName, setPlaceName] = useState<string | null>('');
-  const [placeAddress, setPlaceAddress] = useState<string | null>('');
-  const [place, setPlace] = useState<VendorPlace | null>(null);
+  const [placeName, setPlaceName] = useState<string | null>(vendor?.name || null);
+  const [placeAddress, setPlaceAddress] = useState<string | null>(vendor?.address || null);
+  const [place, setPlace] = useState<VendorPlace | null>(vendor?.place || null);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -36,7 +48,7 @@ export default function AddVendorDialog({ onVendorAdded }: AddVendorDialogProps)
     setOpen(false);
   };
 
-  const handleAdd = async () => {
+  const handleSave = async () => {
     let isError = false;
     if (!placeName) {
       displayError('You need to provide a name');
@@ -50,28 +62,33 @@ export default function AddVendorDialog({ onVendorAdded }: AddVendorDialogProps)
       return;
     }
 
-    const vendor: VendorWithoutId = {
+    const vendorData: VendorWithoutId = {
       place,
       name: placeName,
       address: placeAddress,
     };
 
-    const response = await post<AddVendorRequest, string>({ vendor });
+    let response: ApiResponse<string>;
+    if (isEditing) {
+      response = await patch<AddVendorRequest, string>(`/${vendor.id}`, { vendor: vendorData });
+    } else {
+      response = await post<AddVendorRequest, string>({ vendor: vendorData });
+    }
     if (response.error) {
       displayError(response.error);
     } else if (response.data) {
-      onVendorAdded({ ...vendor, id: response.data });
-      displayInfo(`The vendor ${vendor.name} at ${vendor.address} was added!`);
+      onVendor({ ...vendorData, id: response.data });
+      displayInfo(`The vendor ${vendorData.name} at ${vendorData.address} was saved!`);
       handleClose();
     } else {
-      displayError('Could not create vendor...');
+      displayError('Could not update vendor...');
     }
   };
 
   return (
     <>
       <Button variant="outlined" onClick={handleClickOpen}>
-        Add vendor
+        {isEditing ? 'Edit Vendor' : 'Add Vendor'}
       </Button>
       <Dialog open={open} fullWidth maxWidth="xl">
         <DialogTitle>
@@ -92,6 +109,7 @@ export default function AddVendorDialog({ onVendorAdded }: AddVendorDialogProps)
         <DialogContent sx={{ mt: 2 }}>
           <DialogContentText>Search for a restaurant to quickly fill details</DialogContentText>
           <GoogleMap
+            place={vendor?.place}
             searchable
             ContentInfoActions={(place) => (
               <Button
@@ -141,7 +159,7 @@ export default function AddVendorDialog({ onVendorAdded }: AddVendorDialogProps)
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleAdd}>Add</Button>
+          <Button onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
     </>

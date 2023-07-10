@@ -7,7 +7,7 @@ import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { VendorPageData } from 'src/types/response/vendors/vendor-page.response';
 import SortTable, { HeadCell, Order } from 'src/client/common/components/SortTable';
-import AddVendorDialog from './AddVendorDialog';
+import ManageVendorDialog from './ManageVendorDialog';
 
 const headCells: HeadCell<Vendor>[] = [
   {
@@ -62,7 +62,7 @@ export default function VendorsTable() {
       headCells={headCells}
       initialOrderBy="name"
       loading={loading}
-      Actions={<AddVendorDialog onVendorAdded={(vendor) => setVendors((prev) => [vendor, ...prev])} />}
+      Actions={<ManageVendorDialog onVendor={(vendor) => setVendors((prev) => [vendor, ...prev])} />}
       onPagePropsChange={onPagePropsChange}
     >
       {(item) => {

@@ -55,5 +55,13 @@ export const useApiRequest = (apiUrl: string) => {
     return result;
   };
 
-  return { get, post, loading };
+  const patch = async <Request, Response>(url: string, requestData: Request): Promise<ApiResponse<Response>> => {
+    const result = await doFetch<Request, Response>(url, {
+      body: JSON.stringify(requestData),
+      method: 'PATCH',
+    });
+    return result;
+  };
+
+  return { get, post, patch, loading };
 };
