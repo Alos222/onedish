@@ -1,16 +1,17 @@
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Typography } from '@mui/material';
 import PhotoIcon from '@mui/icons-material/Photo';
-import { FileData } from './OneDishUpload';
 import ReadonlyText from './ReadonlyText';
+import { OneDishTempData } from 'src/types';
 
 interface OneDishCardProps {
-  data: FileData;
+  data: OneDishTempData;
 
   onDelete?: () => void;
 }
 
 export default function OneDishCard({ data, onDelete }: OneDishCardProps) {
-  const { file, fileString, url, title, description } = data;
+  const { fileData, title, description } = data;
+  const { fileString, url } = fileData;
 
   return (
     <Card sx={{ maxWidth: 350 }}>

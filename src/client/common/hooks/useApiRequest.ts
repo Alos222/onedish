@@ -54,6 +54,18 @@ export const useApiRequest = (apiUrl: string) => {
     return result;
   };
 
+  const postFile = async (url: string, formData: FormData) => {
+    let fullUrl = `${baseApiUrl}/${apiUrl}/${url}`;
+
+    const config = {
+      headers: {
+        'content-type': 'multipart/form-data',
+      },
+    };
+    const result = await axios.post(fullUrl, formData, config);
+    return result;
+  };
+
   const patch = async <Request, Response>(url: string, requestData: Request): Promise<ApiResponse<Response>> => {
     const result = await doFetch<Request, Response>(url, {
       body: JSON.stringify(requestData),
@@ -62,5 +74,5 @@ export const useApiRequest = (apiUrl: string) => {
     return result;
   };
 
-  return { get, post, patch, loading };
+  return { get, post, postFile, patch, loading };
 };

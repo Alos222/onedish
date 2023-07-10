@@ -1,37 +1,17 @@
 import { useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Checkbox,
-  FormControlLabel,
-  Grid,
-  Paper,
-  Typography,
-} from '@mui/material';
+import { Box, Button, CardActions, CardContent, CardMedia, Grid } from '@mui/material';
 import PhotoIcon from '@mui/icons-material/Photo';
 import ODTextField from './ODTextField';
 import { Vendor, VendorPhoto } from '@prisma/client';
 import { useNotifications } from '../hooks/useNotifications';
 import PhotoListSelect from './PhotoListSelect';
-
-export type FileData = {
-  id: string;
-  url?: string;
-  file?: File;
-  fileString?: string;
-  title: string;
-  description?: string;
-};
+import { FileData, OneDishTempData } from 'src/types';
 
 interface FileUploadProps {
   vendor?: Vendor;
 
-  onConfirm: (data: FileData) => void;
+  onConfirm: (data: OneDishTempData) => void;
 }
 
 export default function OneDishUpload({ vendor, onConfirm }: FileUploadProps) {
@@ -58,13 +38,16 @@ export default function OneDishUpload({ vendor, onConfirm }: FileUploadProps) {
     }
 
     // TODO Save uploaded image
-    const data: FileData = {
-      id,
+    const fileData: FileData = {
       url,
       file,
       fileString,
+    };
+    const data: OneDishTempData = {
+      id,
       title,
       description,
+      fileData,
     };
     onConfirm(data);
 

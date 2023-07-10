@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { OneDishTempData } from './one-dish-temp-data';
 
 /**
  * List of keys that will be requested in the Google places API
@@ -22,6 +23,6 @@ export type VendorTier = 'first' | 'second' | 'third';
 
 // Vendor data without the id, to be used in POST requests
 const vendorData = Prisma.validator<Prisma.VendorArgs>()({
-  select: { address: true, name: true, place: true, oneDishes: true, tier: true, vendorImage: true },
+  select: { address: true, name: true, place: true, oneDishes: false, tier: true, vendorImage: true },
 });
-export type VendorWithoutId = Prisma.VendorGetPayload<typeof vendorData>;
+export type VendorWithoutId = Prisma.VendorGetPayload<typeof vendorData> & { oneDishesFiles: OneDishTempData[] };

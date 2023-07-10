@@ -5,19 +5,19 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, DialogContentText, Divider, Grid, IconButton, Paper, Typography } from '@mui/material';
+import { Divider, Grid, IconButton, Paper, Typography } from '@mui/material';
 import type { Vendor, VendorPhoto, VendorPlace } from '@prisma/client';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
-import { AddVendorRequest } from 'src/types/request/vendors/add-vendor.request';
-import { VendorTier, VendorWithoutId } from 'src/types';
+import { OneDishTempData, VendorTier, VendorWithoutId } from 'src/types';
 import GoogleMap from 'src/client/common/components/GoogleMap';
-import { ApiResponse } from 'src/types/response/api-response';
-import OneDishUpload, { FileData } from 'src/client/common/components/OneDishUpload';
+import OneDishUpload from 'src/client/common/components/OneDishUpload';
 import ODTextField from 'src/client/common/components/ODTextField';
 import OneDishCard from 'src/client/common/components/OneDishCard';
 import OneDishTier from 'src/client/common/components/OneDishTier';
 import PhotoListSelect from 'src/client/common/components/PhotoListSelect';
+import { ApiResponse } from 'src/types/response/api-response';
+import { AddVendorRequest } from 'src/types/request/vendors/add-vendor.request';
 
 interface ManageVendorDialogProps {
   /**
@@ -36,6 +36,7 @@ interface ManageVendorDialogProps {
 export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDialogProps) {
   const isEditing = !!vendor;
   const { post, patch } = useApiRequest('secure/admin/vendors');
+  const { postFile } = useApiRequest('secure/admin/vendors-photos');
   const { displayInfo, displayError } = useNotifications();
   const [open, setOpen] = useState(false);
 
@@ -48,7 +49,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   // TODO Check this casting...
   const [selectedTier, setSelectedTier] = useState<VendorTier | null>((vendor?.tier as VendorTier) || null);
 
-  const [oneDishes, setOneDishes] = useState<FileData[]>([]);
+  const [oneDishes, setOneDishes] = useState<OneDishTempData[]>([]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -80,25 +81,37 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
       name: placeName,
       address: placeAddress,
       tier: selectedTier,
-      oneDishes: [],
       vendorImage,
+      oneDishesFiles: oneDishes,
     };
 
-    let response: ApiResponse<string>;
-    if (isEditing) {
-      response = await patch<AddVendorRequest, string>(`/${vendor.id}`, { vendor: vendorData });
-    } else {
-      response = await post<AddVendorRequest, string>({ vendor: vendorData });
-    }
-    if (response.error) {
-      displayError(response.error);
-    } else if (response.data) {
-      onVendor({ ...vendorData, id: response.data });
-      displayInfo(`The vendor ${vendorData.name} at ${vendorData.address} was saved!`);
-      handleClose();
-    } else {
-      displayError('Could not update vendor...');
-    }
+    oneDishes.forEach(async (oneDishTempData) => {
+      if (oneDishTempData.fileData.file) {
+        const formData = new FormData();
+        formData.append('file', oneDishTempData.fileData.file, oneDishTempData.fileData.file.name);
+        console.log({ formData, oneDishes });
+
+        // Upload files!
+        // TODO Need to handle when vendor doesn't exist yet...
+        await postFile(`${vendor?.id}`, formData);
+      }
+    });
+
+    // let response: ApiResponse<string>;
+    // if (isEditing) {
+    //   response = await patch<AddVendorRequest, string>(`/${vendor.id}`, { vendor: vendorData });
+    // } else {
+    //   response = await post<AddVendorRequest, string>({ vendor: vendorData });
+    // }
+    // if (response.error) {
+    //   displayError(response.error);
+    // } else if (response.data) {
+    //   onVendor({ ...vendorData, id: response.data });
+    //   displayInfo(`The vendor ${vendorData.name} at ${vendorData.address} was saved!`);
+    //   handleClose();
+    // } else {
+    //   displayError('Could not update vendor...');
+    // }
   };
 
   const text = isEditing ? 'Edit Vendor' : 'Add Vendor';
@@ -245,7 +258,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
 
             <Grid container mt={2} spacing={2}>
               {restrictedOneDishes.map((oneDish) => (
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={12} sm={6} md={4} key={oneDish.id}>
                   <OneDishCard
                     key={oneDish.id}
                     data={oneDish}
