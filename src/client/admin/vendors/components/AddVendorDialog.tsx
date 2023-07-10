@@ -6,13 +6,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, DialogContentText, Divider, IconButton, TextField, Typography } from '@mui/material';
-import type { Vendor, VendorPlace } from '@prisma/client';
-import MapSelect from './VendorMap';
+import type { VendorPlace } from '@prisma/client';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
 import { AddVendorResponse } from 'src/types/response/vendors/add-vendor.response';
 import { AddVendorRequest } from 'src/types/request/vendors/add-vendor.request';
 import { VendorWithoutId } from 'src/types';
+import GoogleMap from 'src/client/common/components/GoogleMap';
 
 interface AddVendorDialogProps {}
 
@@ -87,12 +87,23 @@ export default function AddVendorDialog({}: AddVendorDialogProps) {
         </DialogTitle>
         <DialogContent sx={{ mt: 2 }}>
           <DialogContentText>Search for a restaurant to quickly fill details</DialogContentText>
-          <MapSelect
-            onVendorSelected={(place) => {
-              setPlaceName(place.name);
-              setPlaceAddress(place.formatted_address);
-              setPlace(place);
-            }}
+          <GoogleMap
+            searchable
+            ContentInfoActions={(place) => (
+              <Button
+                variant="outlined"
+                sx={{ mt: 1 }}
+                onClick={() => {
+                  if (place) {
+                    setPlaceName(place.name);
+                    setPlaceAddress(place.formatted_address);
+                    setPlace(place);
+                  }
+                }}
+              >
+                Choose
+              </Button>
+            )}
           />
 
           <Box pt={2}>

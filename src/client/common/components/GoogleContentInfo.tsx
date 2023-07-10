@@ -10,12 +10,16 @@ import { green } from '@mui/material/colors';
 
 interface GoogleContentInfoProps {
   place: VendorPlace;
+
+  ContentInfoActions?: (currentPlace: VendorPlace) => React.ReactNode;
 }
 
-export default function GoogleContentInfo({ place }: GoogleContentInfoProps) {
+export default function GoogleContentInfo({ place, ContentInfoActions }: GoogleContentInfoProps) {
   const { name, formatted_address: address, icon, price_level, rating, url, website } = place;
-  const size = 20;
-  const image = icon ? <Image src={icon} width={size} height={size} alt="Vendor icon" /> : null;
+
+  const contentInfoSize = 350;
+  const iconSize = 20;
+  const image = icon ? <Image src={icon} width={iconSize} height={iconSize} alt="Vendor icon" /> : null;
 
   let dollars = [];
   const price: number = price_level || 0;
@@ -24,7 +28,7 @@ export default function GoogleContentInfo({ place }: GoogleContentInfoProps) {
   }
 
   return (
-    <Box display="flex" flexDirection="column" width={400}>
+    <Box display="flex" flexDirection="column" width={contentInfoSize}>
       <Typography variant="h6" color="primary" display="flex" alignItems="center">
         <Box mr={1}>{image}</Box>
         {name}
@@ -52,6 +56,7 @@ export default function GoogleContentInfo({ place }: GoogleContentInfoProps) {
           <ListItemText primary={url ? <Link href={url}>View on Google Maps</Link> : 'Link not available'} />
         </ListItem>
       </List>
+      {ContentInfoActions && ContentInfoActions(place)}
     </Box>
   );
 }
