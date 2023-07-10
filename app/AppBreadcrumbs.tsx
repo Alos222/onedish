@@ -37,7 +37,6 @@ export default function AppBreadcrumbs() {
         const route = routes.find((route) => {
           if (route.href === pathHref) return true;
           if (route.regex) {
-            console.log(route, pathHref);
             return new RegExp(route.href).test(pathHref);
           }
           return false;
