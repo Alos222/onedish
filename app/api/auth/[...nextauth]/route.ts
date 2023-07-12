@@ -38,7 +38,6 @@ export const authOptions: AuthOptions = {
   // ** Please refer to https://next-auth.js.org/configuration/options#callbacks for more `callbacks` options
   callbacks: {
     async jwt({ token, user, account }) {
-      logger.info('jwt', { token, user, account });
       // Initial sign in
       if (account && user) {
         return {
@@ -58,7 +57,6 @@ export const authOptions: AuthOptions = {
       return refreshAccessToken(token);
     },
     async session({ session, token }) {
-      logger.info('session', { token, session });
       session.user = token.user;
       session.accessToken = token.accessToken;
       session.error = token.error;
