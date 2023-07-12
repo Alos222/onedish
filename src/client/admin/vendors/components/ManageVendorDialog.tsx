@@ -78,6 +78,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   const clearData = () => {
     setOneDishFileUploads([]);
     setOneDishesToDelete([]);
+    setPlace(null);
   };
 
   const handleClickOpen = () => {
@@ -114,6 +115,31 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
     }
 
     try {
+      let vendorId = vendor?.id;
+      if (!vendor) {
+        const createVendorData: VendorWithoutId = {
+          place,
+          name: placeName,
+          address: placeAddress,
+          tier: selectedTier,
+          vendorImage,
+          oneDishes: [],
+        };
+        // Need to create the vendor first, so we can associate images with the vendor id
+        const createResponse = await post<AddVendorRequest, string>({ vendor: createVendorData });
+
+        if (createResponse.error) {
+          displayError(createResponse.error);
+          return;
+        }
+        vendorId = createResponse.data;
+      }
+
+      if (!vendorId) {
+        displayError('Could not create vendor');
+        return;
+      }
+
       let isError = false;
       // Then check if we have any new files to upload
       const uploadPhotos = async () => {
@@ -130,7 +156,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         });
 
         if (hasUploads) {
-          const result = await uploadFromFile<ImageData[]>(`${vendor?.id}`, formData);
+          const result = await uploadFromFile<ImageData[]>(`${vendorId}`, formData);
           if (result.error) {
             displayError(result.error);
             isError = true;
@@ -180,7 +206,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         });
 
         if (hasUploads) {
-          const result = await uploadFromUrl<SaveVendorPhotosFromUrlRequest, ImageData[]>(`/${vendor?.id}`, {
+          const result = await uploadFromUrl<SaveVendorPhotosFromUrlRequest, ImageData[]>(`/${vendorId}`, {
             imageData,
           });
           if (result.error) {
@@ -230,7 +256,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         });
 
         if (imageUrlsToDelete.length) {
-          const result = await deleteWithData<DeleteVendorPhotosRequest, boolean>(`/${vendor?.id}`, {
+          const result = await deleteWithData<DeleteVendorPhotosRequest, boolean>(`/${vendorId}`, {
             imageUrls: imageUrlsToDelete,
           });
           if (result.error) {
@@ -265,17 +291,14 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         oneDishes,
       };
 
-      let response: ApiResponse<string>;
-      if (isEditing) {
-        response = await patch<AddVendorRequest, string>(`/${vendor.id}`, { vendor: vendorData });
-      } else {
-        response = await post<AddVendorRequest, string>({ vendor: vendorData });
-      }
+      let response: ApiResponse<string> = await patch<AddVendorRequest, string>(`/${vendorId}`, {
+        vendor: vendorData,
+      });
       if (response.error) {
         displayError(response.error);
       } else if (response.data) {
         clearData();
-        onVendor({ ...vendorData, id: response.data });
+        onVendor({ ...vendorData, id: vendorId });
 
         displayInfo(`The vendor ${vendorData.name} at ${vendorData.address} was saved!`);
         handleClose();
@@ -434,7 +457,11 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
                 <Typography gutterBottom variant="body1" component="div" color="secondary">
                   Select an image from Google on the right, or upload a file
                 </Typography>
-                <OneDishUpload vendor={vendor} onConfirm={(data) => setOneDishFileUploads((prev) => [...prev, data])} />
+                <OneDishUpload
+                  vendor={vendor}
+                  place={place}
+                  onConfirm={(data) => setOneDishFileUploads((prev) => [...prev, data])}
+                />
                 <Divider sx={{ pt: 2 }} />
               </>
             )}

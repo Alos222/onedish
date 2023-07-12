@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Box, Button, CardActions, CardContent, CardMedia, Grid } from '@mui/material';
 import PhotoIcon from '@mui/icons-material/Photo';
 import ODTextField from './ODTextField';
-import { Vendor, VendorPhoto } from '@prisma/client';
+import { Vendor, VendorPhoto, VendorPlace } from '@prisma/client';
 import { useNotifications } from '../hooks/useNotifications';
 import PhotoListSelect from './PhotoListSelect';
 import { OneDishTempData } from 'src/types';
@@ -11,10 +11,12 @@ import { OneDishTempData } from 'src/types';
 interface FileUploadProps {
   vendor?: Vendor;
 
+  place?: VendorPlace | null;
+
   onConfirm: (data: OneDishTempData) => void;
 }
 
-export default function OneDishUpload({ vendor, onConfirm }: FileUploadProps) {
+export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadProps) {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [file, setFile] = useState<File | undefined>();
@@ -115,26 +117,24 @@ export default function OneDishUpload({ vendor, onConfirm }: FileUploadProps) {
         </CardActions>
       </Grid>
 
-      {vendor && (
-        <Grid item xs={12} sm={7} sx={{ overflowY: 'auto' }}>
-          <PhotoListSelect
-            photos={vendor.place?.photos || []}
-            selectedImage={selectedImage}
-            label="Use for OneDish"
-            onPhotoSelected={(photo) => {
-              setSelectedImage(photo);
-              setUrl(photo?.url);
+      <Grid item xs={12} sm={7} sx={{ overflowY: 'auto' }}>
+        <PhotoListSelect
+          photos={vendor?.place?.photos || place?.photos || []}
+          selectedImage={selectedImage}
+          label="Use for OneDish"
+          onPhotoSelected={(photo) => {
+            setSelectedImage(photo);
+            setUrl(photo?.url);
 
-              // Clear out any file uploads
-              setFile(undefined);
-              setFileString(undefined);
-              if (inputRef.current) {
-                inputRef.current.value = '';
-              }
-            }}
-          />
-        </Grid>
-      )}
+            // Clear out any file uploads
+            setFile(undefined);
+            setFileString(undefined);
+            if (inputRef.current) {
+              inputRef.current.value = '';
+            }
+          }}
+        />
+      </Grid>
     </Grid>
   );
 }
