@@ -4,7 +4,6 @@ import { Icon, useTheme } from '@mui/material';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import UserMenu from 'src/client/home/components/UserMenu';
