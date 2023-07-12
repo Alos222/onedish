@@ -18,4 +18,12 @@ export class ConfigService {
     }
     return AWS_S3_BUCKET_NAME;
   }
+
+  static awsS3Region(): string {
+    const AWS_S3_REGION = process.env.AWS_S3_REGION;
+    if (!AWS_S3_REGION) {
+      throw new Error('No AWS S3 region in environment variables!');
+    }
+    return AWS_S3_REGION;
+  }
 }

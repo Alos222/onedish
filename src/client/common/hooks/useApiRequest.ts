@@ -1,9 +1,26 @@
 import { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { ApiResponse } from 'src/types/response/api-response';
-import { useNotifications } from './useNotifications';
 
 const baseApiUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+const defaultErrorMessage = 'Something went wrong when making API request';
+
+const handleError = (e: any) => {
+  let data: Response | undefined;
+  let errorMessage: string;
+  if (e instanceof AxiosError) {
+    data = e.response?.data.data;
+    errorMessage = e.response?.data.error || defaultErrorMessage;
+    return e.response?.data;
+  }
+
+  console.error(defaultErrorMessage, e);
+  errorMessage = defaultErrorMessage;
+  return {
+    data,
+    error: errorMessage,
+  };
+};
 
 export const useApiRequest = (apiUrl: string) => {
   const [loading, setLoading] = useState(false);
@@ -21,21 +38,7 @@ export const useApiRequest = (apiUrl: string) => {
 
       return result;
     } catch (e) {
-      let data: Response | undefined;
-      let errorMessage: string;
-      const defaultErrorMessage = 'Something went wrong when making API request';
-      if (e instanceof AxiosError) {
-        data = e.response?.data.data;
-        errorMessage = e.response?.data.error || defaultErrorMessage;
-        return e.response?.data;
-      }
-
-      console.log(defaultErrorMessage, e);
-      errorMessage = defaultErrorMessage;
-      return {
-        data,
-        error: errorMessage,
-      };
+      return handleError(e);
     } finally {
       setLoading(false);
     }
@@ -54,7 +57,7 @@ export const useApiRequest = (apiUrl: string) => {
     return result;
   };
 
-  const postFile = async (url: string, formData: FormData) => {
+  const postFile = async <Response>(url: string, formData: FormData): Promise<ApiResponse<Response>> => {
     let fullUrl = `${baseApiUrl}/${apiUrl}/${url}`;
 
     const config = {
@@ -62,8 +65,21 @@ export const useApiRequest = (apiUrl: string) => {
         'content-type': 'multipart/form-data',
       },
     };
-    const result = await axios.post(fullUrl, formData, config);
-    return result;
+    try {
+      setLoading(true);
+      const result = await axios.post<ApiResponse<Response>>(fullUrl, formData, config);
+      if (result.status === 200) {
+        return result.data;
+      }
+      console.error('Response status was not 200');
+      return {
+        error: defaultErrorMessage,
+      };
+    } catch (e) {
+      return handleError(e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const patch = async <Request, Response>(url: string, requestData: Request): Promise<ApiResponse<Response>> => {

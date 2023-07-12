@@ -1,23 +1,19 @@
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Typography } from '@mui/material';
 import PhotoIcon from '@mui/icons-material/Photo';
 import ReadonlyText from './ReadonlyText';
-import { OneDishTempData } from 'src/types';
 
 interface OneDishCardProps {
-  data: OneDishTempData;
-
+  url?: string;
+  title: string;
+  description?: string | null;
   onDelete?: () => void;
 }
 
-export default function OneDishCard({ data, onDelete }: OneDishCardProps) {
-  const { fileData, title, description } = data;
-  const { fileString, url } = fileData;
-
+export default function OneDishCard({ url, title, description, onDelete }: OneDishCardProps) {
   return (
     <Card sx={{ maxWidth: 350 }}>
-      {fileString && <CardMedia sx={{ height: 300 }} image={fileString} title="oneDish" />}
       {url && <CardMedia sx={{ height: 300 }} image={url} title="oneDish" />}
-      {!fileString && !url && (
+      {!url && (
         <Box display="flex" alignContent="center" justifyContent="center" p={4}>
           <PhotoIcon />
         </Box>

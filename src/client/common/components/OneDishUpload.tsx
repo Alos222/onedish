@@ -6,7 +6,7 @@ import ODTextField from './ODTextField';
 import { Vendor, VendorPhoto } from '@prisma/client';
 import { useNotifications } from '../hooks/useNotifications';
 import PhotoListSelect from './PhotoListSelect';
-import { FileData, OneDishTempData } from 'src/types';
+import { OneDishTempData } from 'src/types';
 
 interface FileUploadProps {
   vendor?: Vendor;
@@ -37,17 +37,13 @@ export default function OneDishUpload({ vendor, onConfirm }: FileUploadProps) {
       return;
     }
 
-    // TODO Save uploaded image
-    const fileData: FileData = {
-      url,
-      file,
-      fileString,
-    };
     const data: OneDishTempData = {
       id,
       title,
       description,
-      fileData,
+      url,
+      file,
+      fileString,
     };
     onConfirm(data);
 
@@ -78,7 +74,7 @@ export default function OneDishUpload({ vendor, onConfirm }: FileUploadProps) {
               hidden
               ref={inputRef}
               onChange={(event) => {
-                if (event.target.files) {
+                if (event.target.files?.length) {
                   const selectedFile = event.target.files[0];
                   setFile(selectedFile);
 

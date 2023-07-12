@@ -45,14 +45,20 @@ type VendorPhoto {
   html_attributions String[]
 }
 
+type OneDish {
+  url         String
+  title       String
+  description String?
+}
+
 model Vendor {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
   address     String
   name        String
   vendorImage VendorPhoto?
   place       VendorPlace?
   tier        String?
-  oneDishes   VendorPlace[]
+  oneDishes   OneDish[]
 
   @@map("vendors")
 }
