@@ -99,8 +99,12 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
     }
 
     try {
+      let isError = false;
       // Then check if we have any new files to upload
-      if (oneDishFileUploads.length) {
+      const uploadPhotos = async () => {
+        if (!oneDishFileUploads.length) {
+          return;
+        }
         const formData = new FormData();
         let hasUploads = false;
         oneDishFileUploads.forEach(async (oneDishTempData) => {
@@ -114,10 +118,12 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
           const result = await postFile<ImageData[]>(`${vendor?.id}`, formData);
           if (result.error) {
             displayError(result.error);
+            isError = true;
             return;
           }
           if (!result.data || !result.data.length) {
             displayError('Could not upload photos');
+            isError = true;
             return;
           }
 
@@ -140,10 +146,13 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
             }
           });
         }
-      }
+      };
 
       // Then check if we have any files to delete
-      if (oneDishesToDelete.length) {
+      const deletePhotos = async () => {
+        if (!oneDishesToDelete.length) {
+          return;
+        }
         const imageUrlsToDelete: string[] = [];
         oneDishesToDelete.forEach(async (oneDishTempData) => {
           if (oneDishTempData?.url) {
@@ -159,16 +168,25 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
           });
           if (result.error) {
             displayError(result.error);
+            isError = true;
             return;
           }
           if (!result.data) {
             displayError('Could not delete photos');
+            isError = true;
             return;
           }
 
           // Remove those deleted images from the data that we are saving
           oneDishes = oneDishes.filter((o) => oneDishesToDelete.some((toDelete) => o.id !== toDelete.id));
         }
+      };
+
+      // TODO I have a bad feeling about doing it this way...
+      // Should probably move these request functions and error checking into seperate files/functions out of this hook
+      await Promise.all([uploadPhotos(), deletePhotos()]);
+      if (isError) {
+        return;
       }
 
       const vendorData: VendorWithoutId = {
