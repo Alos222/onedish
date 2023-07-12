@@ -2,8 +2,10 @@
 
 import { Box, Divider, Paper } from '@mui/material';
 import AppBreadcrumbs from 'app/AppBreadcrumbs';
+import { User } from 'next-auth';
 
 interface AppWrapperProps {
+  user?: User;
   children: React.ReactNode;
 }
 
@@ -12,12 +14,16 @@ interface AppWrapperProps {
  * @param param0
  * @returns
  */
-export default function AppWrapper({ children }: AppWrapperProps) {
+export default function AppWrapper({ user, children }: AppWrapperProps) {
   return (
     <Box m={2}>
       <Paper sx={{ p: 2 }} elevation={3}>
-        <AppBreadcrumbs />
-        <Divider sx={{ my: 2 }} />
+        {user && (
+          <>
+            <AppBreadcrumbs />
+            <Divider sx={{ my: 2 }} />
+          </>
+        )}
         {children}
       </Paper>
     </Box>
