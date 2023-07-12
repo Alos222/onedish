@@ -33,7 +33,6 @@ export default function OneDishTier({ tier, tierDescription, selectedTier, onTie
                 } else {
                   newTier = tier;
                 }
-                console.log(newTier);
                 onTierSelected(newTier);
               }}
             />
