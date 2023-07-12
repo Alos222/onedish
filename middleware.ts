@@ -2,18 +2,19 @@ import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 // import { localhostAccessTokenRedirectMiddleware } from 'src/server/middlewares/appMiddlewares/localhostAccessTokenRedirectMiddleware';
 // import { secureApiMiddleware } from 'src/server/middlewares/appMiddlewares/secureApiMiddleware';
 // import { securePageMiddleware } from 'src/server/middlewares/appMiddlewares/securePageMiddleware';
+export { default } from 'next-auth/middleware';
 
-export async function middleware(request: NextRequest, event: NextFetchEvent) {
-  if (request.nextUrl.pathname.startsWith('/api')) {
-    if (request.nextUrl.pathname.startsWith('/api/secure')) {
-      // return secureApiMiddleware(request, event);
-    }
-    return NextResponse.next();
-  }
+// export async function middleware(request: NextRequest, event: NextFetchEvent) {
+//   if (request.nextUrl.pathname.startsWith('/api')) {
+//     if (request.nextUrl.pathname.startsWith('/api/secure')) {
+//       // return secureApiMiddleware(request, event);
+//     }
+//     return NextResponse.next();
+//   }
 
-  // return securePageMiddleware(request, event);
-  return NextResponse.next();
-}
+//   // return securePageMiddleware(request, event);
+//   return NextResponse.next();
+// }
 
 export const config = {
   matcher: [
