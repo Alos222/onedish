@@ -1,6 +1,7 @@
 import { User } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import Logout from '@mui/icons-material/Logout';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -92,6 +93,16 @@ export default function UserMenu({ user }: UserMenuProps) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
+        <MenuItem
+          onClick={async () => {
+            router.push('/admin');
+          }}
+        >
+          <ListItemIcon>
+            <AdminPanelSettingsIcon fontSize="small" />
+          </ListItemIcon>
+          Admin
+        </MenuItem>
         <MenuItem
           onClick={async () => {
             await signOut();

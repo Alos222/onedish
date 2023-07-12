@@ -14,7 +14,7 @@ function Layout({ children }: SecureLayoutProps) {
   return (
     <>
       <Navbar user={session?.user} />
-      <AppWrapper>{children}</AppWrapper>
+      <AppWrapper user={session?.user}>{children}</AppWrapper>
     </>
   );
 }

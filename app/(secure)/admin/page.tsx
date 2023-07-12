@@ -1,10 +1,12 @@
 import { Metadata } from 'next';
 import { ConfigService } from 'src/server/services/config.service';
-import HomePage from 'app/(secure)/HomePage';
+import AdminPage from './AdminPage';
+import { AdminRouteName } from 'app/route-names';
 
 export const metadata: Metadata = {
-  title: `${ConfigService.appName()}`,
+  title: `${ConfigService.appName()} | ${AdminRouteName}`,
 };
+
 export default async function App() {
-  return <HomePage />;
+  return <AdminPage />;
 }

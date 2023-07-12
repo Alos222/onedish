@@ -1,20 +1,32 @@
 import { Box, Typography } from '@mui/material';
+import { OneDishRoute } from 'app/routes';
 
 interface PageContainerProps {
-  title: string;
-  subtitle?: string;
+  route: OneDishRoute;
+  /**
+   * Provide a description here for the case when you need to dynamically determine it
+   */
+  description?: string;
 }
 
-export default function PageContainer({ title, subtitle, children }: React.PropsWithChildren<PageContainerProps>) {
+export default function PageContainer({
+  route,
+  description: propsDescription,
+  children,
+}: React.PropsWithChildren<PageContainerProps>) {
+  const { name, description: routeDescription } = route;
+
+  const description = routeDescription || propsDescription;
+
   return (
     <Box>
       <Box mb={2}>
         <Typography variant="h5" color="primary">
-          {title}
+          {name}
         </Typography>
-        {subtitle && (
+        {description && (
           <Typography variant="body1" color="secondary">
-            {subtitle}
+            {description}
           </Typography>
         )}
       </Box>

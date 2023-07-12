@@ -1,10 +1,11 @@
-import { ConfigService } from 'src/server/services/config.service';
-
 import { Metadata } from 'next';
+import { ConfigService } from 'src/server/services/config.service';
 import VendorDetailsPage from './VendorDetailsPage';
 import { VendorService } from 'src/server/services/vendor.service';
+import { VendorDetailsRouteName } from 'app/route-names';
+
 export const metadata: Metadata = {
-  title: `${ConfigService.appName()} | Vendor Details`,
+  title: `${ConfigService.appName()} | ${VendorDetailsRouteName}`,
 };
 
 export default async function App({ params: { vendorId } }: { params: { vendorId: string } }) {

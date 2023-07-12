@@ -1,6 +1,7 @@
 'use client';
 
 import { Vendor } from '@prisma/client';
+import { VendorDetailsRoute } from 'app/routes';
 import { useState } from 'react';
 import VendorDetails from 'src/client/admin/vendors/components/VendorDetails';
 import PageContainer from 'src/client/common/components/PageContainer';
@@ -16,7 +17,7 @@ export default function VendorDetailsPage({ vendor: v }: VendorDetailsPageProps)
   const [vendor, setVendor] = useState(v);
 
   return (
-    <PageContainer title="Vendor Details" subtitle={`Manage details for the ${vendor.name} vendor`}>
+    <PageContainer route={VendorDetailsRoute} description={`Manage details for the ${vendor.name} vendor`}>
       <VendorDetails vendor={vendor} onVendorUpdated={setVendor} />
     </PageContainer>
   );
