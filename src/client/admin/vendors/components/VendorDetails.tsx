@@ -1,9 +1,10 @@
 import React from 'react';
-import { Card, CardContent, CardMedia, Grid, Typography } from '@mui/material';
+import { Card, CardContent, CardMedia, Grid, Paper, Typography } from '@mui/material';
 import { Vendor } from '@prisma/client';
 import GoogleMap from '../../../common/components/GoogleMap';
 import PlaceDetails from 'src/client/common/components/PlaceDetails';
 import ManageVendorDialog from './ManageVendorDialog';
+import OneDishCard from 'src/client/common/components/OneDishCard';
 
 interface VendorDetailsProps {
   vendor: Vendor;
@@ -11,7 +12,7 @@ interface VendorDetailsProps {
 }
 
 export default function VendorDetails({ vendor, onVendorUpdated }: VendorDetailsProps) {
-  const { vendorImage, place } = vendor;
+  const { vendorImage, place, oneDishes } = vendor;
 
   return (
     <Grid container spacing={2}>
@@ -30,6 +31,26 @@ export default function VendorDetails({ vendor, onVendorUpdated }: VendorDetails
         <Typography variant="subtitle2" color="secondary">
           Details on map may differ than those saved for a vendor
         </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+          <Typography gutterBottom variant="h5" component="div" color="primary">
+            OneDish
+          </Typography>
+
+          <Grid container mt={2} spacing={2}>
+            {oneDishes.map((oneDish) => (
+              <Grid item xs={12} sm={6} md={4} key={oneDish.id}>
+                <OneDishCard
+                  key={oneDish.id}
+                  url={oneDish.url}
+                  title={oneDish.title}
+                  description={oneDish.description}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Paper>
       </Grid>
     </Grid>
   );
