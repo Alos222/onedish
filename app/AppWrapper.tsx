@@ -18,12 +18,8 @@ export default function AppWrapper({ user, children }: AppWrapperProps) {
   return (
     <Box m={2}>
       <Paper sx={{ p: 2 }} elevation={3}>
-        {user && (
-          <>
-            <AppBreadcrumbs />
-            <Divider sx={{ my: 2 }} />
-          </>
-        )}
+        <AppBreadcrumbs />
+        <Divider sx={{ my: 2 }} />
         {children}
       </Paper>
     </Box>

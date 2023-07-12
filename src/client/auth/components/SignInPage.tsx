@@ -24,7 +24,7 @@ export default function SignInPage() {
         endIcon={loading ? <CircularProgress size={20} sx={{ ml: 1 }} /> : null}
         disabled={loading}
         onClick={() => {
-          signIn('google', { callbackUrl: '/' });
+          signIn('google', { callbackUrl: '/admin' });
           setLoading(true);
         }}
       >

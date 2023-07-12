@@ -3,7 +3,7 @@ import routes from 'app/routes';
 import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const ignoreHrefs = ['/auth', '/access-tokens', '/access-tokens/success'];
+const ignoreHrefs = ['/auth', '/auth/signIn', '/access-tokens', '/access-tokens/success'];
 
 interface LinkRouterProps extends LinkProps {
   href: string;
