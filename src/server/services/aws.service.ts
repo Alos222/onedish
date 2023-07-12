@@ -20,12 +20,15 @@ export class AwsService {
    * @param file The file to be saved
    * @returns The S3 url for the saved file
    */
-  async uploadVendorPhoto(vendorId: string, file: File): Promise<string> {
+  async uploadVendorPhotoFile(vendorId: string, file: File): Promise<string> {
     this.logger.info('Staring vendor photo upload to AWS S3', { vendorId, fileName: file.name });
 
     const buffer = await file.arrayBuffer();
+    return this.uploadVendorPhoto(vendorId, file.name, new Uint8Array(buffer));
+  }
 
-    const key = `${this.vendorPhotosKey}/${vendorId}/${file.name}`;
+  async uploadVendorPhoto(vendorId: string, fileName: string, buffer: Uint8Array) {
+    const key = `${this.vendorPhotosKey}/${vendorId}/${fileName}`;
 
     const command = new PutObjectCommand({
       Bucket: ConfigService.awsS3BucketName(),
@@ -40,13 +43,13 @@ export class AwsService {
     if (!success) {
       this.logger.error('Vendor photo upload to AWS S3 did not have 200 status code', {
         vendorId,
-        fileName: file.name,
+        fileName,
         result,
       });
     }
 
     const url = `${this.getS3Url()}/${key}`;
-    this.logger.info('Finished vendor photo upload to AWS S3', { vendorId, fileName: file.name, result, url });
+    this.logger.info('Finished vendor photo upload to AWS S3', { vendorId, fileName, result, url });
 
     return url;
   }

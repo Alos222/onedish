@@ -57,6 +57,14 @@ export const useApiRequest = (apiUrl: string) => {
     return result;
   };
 
+  const postWithUrl = async <Request, Response>(url: string, requestData: Request): Promise<ApiResponse<Response>> => {
+    const result = await doFetch<Request, Response>(url, {
+      body: JSON.stringify(requestData),
+      method: 'POST',
+    });
+    return result;
+  };
+
   const postFile = async <Response>(url: string, formData: FormData): Promise<ApiResponse<Response>> => {
     let fullUrl = `${baseApiUrl}/${apiUrl}/${url}`;
 
@@ -107,5 +115,5 @@ export const useApiRequest = (apiUrl: string) => {
     return result;
   };
 
-  return { get, post, postFile, patch, deleteWithData, loading };
+  return { get, post, postWithUrl, postFile, patch, deleteWithData, loading };
 };

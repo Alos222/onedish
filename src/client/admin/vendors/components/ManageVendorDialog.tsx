@@ -9,7 +9,13 @@ import { Divider, Grid, IconButton, Paper, Typography } from '@mui/material';
 import type { OneDish, Vendor, VendorPhoto, VendorPlace } from '@prisma/client';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
-import { OneDishTempData, VendorTier, VendorWithoutId } from 'src/types';
+import {
+  ImageDataRequest,
+  OneDishTempData,
+  SaveVendorPhotosFromUrlRequest,
+  VendorTier,
+  VendorWithoutId,
+} from 'src/types';
 import GoogleMap from 'src/client/common/components/GoogleMap';
 import OneDishUpload from 'src/client/common/components/OneDishUpload';
 import ODTextField from 'src/client/common/components/ODTextField';
@@ -39,7 +45,16 @@ interface ManageVendorDialogProps {
 export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDialogProps) {
   const isEditing = !!vendor;
   const { post, patch, loading: loadingSave } = useApiRequest('secure/admin/vendors');
-  const { postFile, deleteWithData, loading: loadingVendorPhotos } = useApiRequest('secure/admin/vendors-photos');
+  const { postFile: uploadFromFile, loading: loadingUploadFromFile } = useApiRequest(
+    'secure/admin/vendors-photos/upload-from-file'
+  );
+  const { postWithUrl: uploadFromUrl, loading: loadingUploadFromUrl } = useApiRequest(
+    'secure/admin/vendors-photos/upload-from-url'
+  );
+  const { deleteWithData, loading: loadingDelete } = useApiRequest('secure/admin/vendors-photos/delete');
+
+  const isLoading = loadingSave || loadingUploadFromFile || loadingUploadFromUrl || loadingDelete;
+
   const { displayInfo, displayError } = useNotifications();
   const [open, setOpen] = useState(false);
 
@@ -115,7 +130,59 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         });
 
         if (hasUploads) {
-          const result = await postFile<ImageData[]>(`${vendor?.id}`, formData);
+          const result = await uploadFromFile<ImageData[]>(`${vendor?.id}`, formData);
+          if (result.error) {
+            displayError(result.error);
+            isError = true;
+            return;
+          }
+          if (!result.data || !result.data.length) {
+            displayError('Could not upload photos');
+            isError = true;
+            return;
+          }
+
+          // Associate the saved files with a OneDish
+          result.data.forEach(({ id, url }) => {
+            const oneDishTempData = oneDishFileUploads.find((o) => o.id === id);
+            if (!oneDishTempData) {
+              console.error('Could not find OneDish data for a saved image', {
+                id,
+                s3Url: url,
+              });
+              displayError('Could not find OneDish data for a saved image');
+            } else {
+              oneDishes.push({
+                id,
+                url,
+                title: oneDishTempData.title,
+                description: oneDishTempData.description,
+              });
+            }
+          });
+        }
+      };
+
+      const uploadPhotoUrls = async () => {
+        if (!oneDishFileUploads.length) {
+          return;
+        }
+        const imageData: ImageDataRequest[] = [];
+        let hasUploads = false;
+        oneDishFileUploads.forEach(async (oneDishTempData) => {
+          if (oneDishTempData?.newFileUrl) {
+            imageData.push({
+              id: oneDishTempData.id,
+              url: oneDishTempData.newFileUrl,
+            });
+            hasUploads = true;
+          }
+        });
+
+        if (hasUploads) {
+          const result = await uploadFromUrl<SaveVendorPhotosFromUrlRequest, ImageData[]>(`/${vendor?.id}`, {
+            imageData,
+          });
           if (result.error) {
             displayError(result.error);
             isError = true;
@@ -184,7 +251,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
 
       // TODO I have a bad feeling about doing it this way...
       // Should probably move these request functions and error checking into seperate files/functions out of this hook
-      await Promise.all([uploadPhotos(), deletePhotos()]);
+      await Promise.all([uploadPhotos(), uploadPhotoUrls(), deletePhotos()]);
       if (isError) {
         return;
       }
@@ -389,7 +456,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <LoadingButton loading={loadingVendorPhotos || loadingSave} onClick={handleSave}>
+          <LoadingButton loading={isLoading} onClick={handleSave}>
             Save
           </LoadingButton>
         </DialogActions>
