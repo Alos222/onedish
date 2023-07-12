@@ -1,13 +1,12 @@
 import Link from 'next/link';
-import MenuIcon from '@mui/icons-material/Menu';
-import { Icon, useTheme } from '@mui/material';
+import { useTheme } from '@mui/material';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import UserMenu from 'src/client/home/components/UserMenu';
 import { User } from 'next-auth';
+import UserMenu from './UserMenu';
 
 interface NavbarProps {
   user?: User;

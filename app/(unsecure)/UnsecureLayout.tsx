@@ -1,7 +1,7 @@
 'use client';
 
 import AppWrapper from 'app/AppWrapper';
-import Navbar from 'src/client/home/components/Navbar';
+import Navbar from 'src/client/common/components/Navbar';
 
 interface UnsecureLayoutProps {
   children: React.ReactNode;

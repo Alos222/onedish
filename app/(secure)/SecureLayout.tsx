@@ -2,7 +2,7 @@
 
 import { SessionProvider, useSession } from 'next-auth/react';
 import AppWrapper from 'app/AppWrapper';
-import Navbar from 'src/client/home/components/Navbar';
+import Navbar from 'src/client/common/components/Navbar';
 
 interface SecureLayoutProps {
   children: React.ReactNode;
