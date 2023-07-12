@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardMedia, Grid, Typography } from '@mui/material';
 import { Vendor } from '@prisma/client';
 import GoogleMap from '../../../common/components/GoogleMap';
@@ -7,11 +7,11 @@ import ManageVendorDialog from './ManageVendorDialog';
 
 interface VendorDetailsProps {
   vendor: Vendor;
+  onVendorUpdated: (vendor: Vendor) => void;
 }
 
-export default function VendorDetails({ vendor: v }: VendorDetailsProps) {
-  const [vendor, setVendor] = useState(v);
-  const { name, address, vendorImage, place } = vendor;
+export default function VendorDetails({ vendor, onVendorUpdated }: VendorDetailsProps) {
+  const { vendorImage, place } = vendor;
 
   return (
     <Grid container spacing={2}>
@@ -19,18 +19,8 @@ export default function VendorDetails({ vendor: v }: VendorDetailsProps) {
         <Card sx={{ maxWidth: 450 }}>
           {/* {oneDish && <CardMedia sx={{ height: 200 }} image={oneDish.url} title="Vendor OneDish" />} */}
           <CardContent>
-            {!place && (
-              <>
-                <Typography gutterBottom variant="h5" component="div" color="primary">
-                  {name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {address}
-                </Typography>
-              </>
-            )}
-            {place && <PlaceDetails place={place} />}
-            <ManageVendorDialog vendor={vendor} onVendor={(vendor) => setVendor(vendor)} />
+            <PlaceDetails vendor={vendor} />
+            <ManageVendorDialog vendor={vendor} onVendor={(vendor) => onVendorUpdated(vendor)} />
           </CardContent>
           {vendorImage && <CardMedia sx={{ height: 200 }} image={vendorImage.url} title="Vendor image" />}
         </Card>
