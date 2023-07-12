@@ -39,8 +39,8 @@ export default async function refreshAccessToken(token: JWT) {
       accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
     };
-  } catch (error) {
-    logger.error('Error when getting refetch token', { error, token });
+  } catch (err) {
+    logger.error('Error when getting refetch token', { err, token });
 
     return {
       ...token,
