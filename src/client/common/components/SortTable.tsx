@@ -102,7 +102,7 @@ export default function SortTable<T>({
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof T>(initialOrderBy);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(20);
   const [text, setText] = React.useState('');
   const [searchText] = useDebounce(text, 1000);
 
@@ -184,7 +184,7 @@ export default function SortTable<T>({
           </TableContainer>
         )}
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[20, 50, 100]}
           component="div"
           count={total}
           rowsPerPage={rowsPerPage}
