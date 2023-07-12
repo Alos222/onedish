@@ -25,17 +25,18 @@
     "baseUrl": ".",
     "paths": {
       "src/app/*": ["src/app/*"],
+      "src/client/*": ["src/client/*"],
       "src/server/*": ["src/server/*"]
     },
-    "isolatedModules": true
+    "isolatedModules": true,
+    "typeRoots": ["./types"],
   },
   "include": [
     "app",
-    "server",
     "src",
-    ".next/types/**/*.ts",
-    "pages/api",
-    "middleware.ts"
+    "middleware.ts",
+    "types/next-auth.d.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

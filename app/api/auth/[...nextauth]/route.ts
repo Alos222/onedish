@@ -1,11 +1,10 @@
-import NextAuth, { AuthOptions, DefaultSession, TokenSet, User } from 'next-auth';
+import NextAuth, { AuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaClient } from '@prisma/client';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { ConfigService } from 'src/server/services/config.service';
 import { LoggerService } from 'src/server/services/logger.service';
 import refreshAccessToken from './refreshAccessToken';
-import { AdapterUser } from 'next-auth/adapters';
 
 const logger = new LoggerService('NextAuth');
 const prisma = new PrismaClient();
@@ -71,26 +70,3 @@ export const authOptions: AuthOptions = {
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
-
-declare module 'next-auth' {
-  /**
-   * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-   */
-  interface Session {
-    user: {} & DefaultSession['user'];
-
-    accessToken?: string;
-    error?: string;
-  }
-}
-
-declare module 'next-auth/jwt' {
-  interface JWT {
-    user: User | AdapterUser;
-
-    accessToken?: string;
-    refreshToken?: string;
-    accessTokenExpires?: number;
-    error?: string;
-  }
-}

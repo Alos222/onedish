@@ -54,6 +54,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/google.maps": "^3.53.4",
+    "@types/next-auth": "^3.15.0",
     "@types/uuid": "^9.0.2",
     "aws-crt": "^1.15.20",
     "encoding": "^0.1.13",

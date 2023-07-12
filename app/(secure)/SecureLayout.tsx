@@ -1,11 +1,22 @@
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
+import { SessionProvider, useSession } from 'next-auth/react';
 import AppWrapper from 'app/AppWrapper';
 import Navbar from 'src/client/home/components/Navbar';
 
 interface SecureLayoutProps {
   children: React.ReactNode;
+}
+
+function Layout({ children }: SecureLayoutProps) {
+  const { data: session } = useSession();
+
+  return (
+    <>
+      <Navbar user={session?.user} />
+      <AppWrapper>{children}</AppWrapper>
+    </>
+  );
 }
 
 /**
@@ -16,8 +27,7 @@ interface SecureLayoutProps {
 export default function SecureLayout({ children }: SecureLayoutProps) {
   return (
     <SessionProvider>
-      <Navbar isSecure />
-      <AppWrapper>{children}</AppWrapper>
+      <Layout>{children}</Layout>
     </SessionProvider>
   );
 }

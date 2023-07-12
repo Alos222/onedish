@@ -1,9 +1,12 @@
-import ErrorIcon from '@mui/icons-material/Error';
+import { User } from 'next-auth';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import Logout from '@mui/icons-material/Logout';
 import { Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
+import ErrorIcon from '@mui/icons-material/Error';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
@@ -11,17 +14,19 @@ import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import * as React from 'react';
+import { useState } from 'react';
 
-const jiraUrl = process.env.NEXT_PUBLIC_JIRA_URL;
+interface UserMenuProps {
+  user: User;
+}
 
-export default function UserMenu() {
-  // const logOut = useLogOut();
+export default function UserMenu({ user }: UserMenuProps) {
   const router = useRouter();
   const pathname = usePathname();
   // const { displayError } = useNotifications();
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -30,14 +35,17 @@ export default function UserMenu() {
     setAnchorEl(null);
   };
 
-  if (!pathname || pathname?.startsWith('/auth')) {
-    // Don't show menu in non-authenticated pages
-    return null;
-  }
+  // if (!pathname || pathname?.startsWith('/auth')) {
+  //   // Don't show menu in non-authenticated pages
+  //   return null;
+  // }
 
   return (
-    <React.Fragment>
+    <>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+        <Typography variant="subtitle2" color="primary">
+          Howdy, {user.name}!
+        </Typography>
         <Tooltip title="Account profiles">
           <IconButton
             onClick={handleClick}
@@ -46,7 +54,10 @@ export default function UserMenu() {
             aria-controls={open ? 'account-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
-          ></IconButton>
+          >
+            {user.image && <Avatar alt={user.name || 'Logged in user'} src={user.image} />}
+            {!user.image && <AccountCircleIcon />}
+          </IconButton>
         </Tooltip>
       </Box>
       <Menu
@@ -84,20 +95,17 @@ export default function UserMenu() {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        {/* <MenuItem
+        <MenuItem
           onClick={async () => {
-            await logOut();
-            setGitUser(undefined);
-            setJiraUser(undefined);
-            router.push('/auth/oauth-setup');
+            await signOut();
           }}
         >
           <ListItemIcon>
-            <Logout fontSize='small' />
+            <Logout fontSize="small" />
           </ListItemIcon>
           Logout
-        </MenuItem> */}
+        </MenuItem>
       </Menu>
-    </React.Fragment>
+    </>
   );
 }
