@@ -39,9 +39,9 @@ export default function OneDishUpload({ vendor, onConfirm }: FileUploadProps) {
 
     const data: OneDishTempData = {
       id,
-      title,
-      description,
-      url,
+      title: title?.trim(),
+      description: description?.trim(),
+      newFileUrl: url,
       file,
       fileString,
     };

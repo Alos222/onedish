@@ -36,8 +36,7 @@ export async function POST(request: Request) {
     const response: AddVendorResponse = { data: vendorId };
     return NextResponse.json(response);
   } catch (e) {
-    console.error(e);
-
+    logger.error('Could not create vendor', { err: e });
     return NextResponse.json({ error: 'Could not create vendor' }, { status: 400 });
   }
 }

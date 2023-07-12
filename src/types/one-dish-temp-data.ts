@@ -10,9 +10,16 @@ export interface OneDishTempData extends Pick<OneDish, 'title' | 'description'> 
   id: string;
 
   /**
-   * Url for where this file is hosted, for example if it comes from Google maps
+   * If this is an already saved OneDish, then this url will point to the image saved in S3
    */
   url?: string;
+
+  /**
+   * If this is a file upload from Google maps for example, then this url will be what is used
+   *
+   * This is to distinguish between a new file to upload to S3, versus a url that we have already saved in S3
+   */
+  newFileUrl?: string;
 
   /**
    * File data, if this is a new file upload
