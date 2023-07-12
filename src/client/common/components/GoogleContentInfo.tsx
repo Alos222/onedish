@@ -1,22 +1,5 @@
-import Image from 'next/image';
-import {
-  Typography,
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  ImageList,
-  ImageListItem,
-  Paper,
-} from '@mui/material';
-import PublicIcon from '@mui/icons-material/Public';
-import PinDropIcon from '@mui/icons-material/PinDrop';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import MapIcon from '@mui/icons-material/Map';
+import { Box, ImageList, ImageListItem } from '@mui/material';
 import { VendorPlace } from '@prisma/client';
-import Link from 'next/link';
-import { green } from '@mui/material/colors';
 import PlaceDetails from './PlaceDetails';
 
 interface GoogleContentInfoProps {
@@ -33,8 +16,9 @@ export default function GoogleContentInfo({ place, ContentInfoActions }: GoogleC
   return (
     <Box display="flex" flexDirection="column" width={contentInfoSize}>
       <PlaceDetails place={place} />
+      {ContentInfoActions && ContentInfoActions(place)}
       {photos.length && (
-        <ImageList sx={{ width: contentInfoSize - 20, height: 450 }}>
+        <ImageList sx={{ width: contentInfoSize - 20, height: 450 }} cols={4} rowHeight={80}>
           {photos.map((photo) => (
             <ImageListItem key={photo.url}>
               <img
@@ -42,12 +26,12 @@ export default function GoogleContentInfo({ place, ContentInfoActions }: GoogleC
                 srcSet={`${photo.url}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
                 alt={`Photo of ${name}`}
                 loading="lazy"
+                width={80}
               />
             </ImageListItem>
           ))}
         </ImageList>
       )}
-      {ContentInfoActions && ContentInfoActions(place)}
     </Box>
   );
 }

@@ -426,7 +426,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
                         }
                       }}
                     >
-                      Choose
+                      Use this place
                     </Button>
                   )}
                 />

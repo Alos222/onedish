@@ -1,22 +1,13 @@
 import Image from 'next/image';
-import {
-  Typography,
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  ImageList,
-  ImageListItem,
-  Paper,
-} from '@mui/material';
+import { Typography, Box, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import StarIcon from '@mui/icons-material/Star';
 import MapIcon from '@mui/icons-material/Map';
 import { Vendor, VendorPlace } from '@prisma/client';
 import Link from 'next/link';
-import { green } from '@mui/material/colors';
+import { green, yellow } from '@mui/material/colors';
 
 interface PlaceDetailsProps {
   vendor?: Vendor;
@@ -50,12 +41,14 @@ export default function PlaceDetails({ vendor, place: p }: PlaceDetailsProps) {
   }
   return (
     <>
-      <Typography variant="h5" color="primary" display="flex" alignItems="center">
-        <Box mr={1}>{image}</Box>
-        {name}
-      </Typography>
-      <Box display="flex" alignItems="center">
-        {rating} &#8226; {dollars}
+      <Box display="flex" flexWrap="wrap" alignItems="center" justifyContent="space-between" mr={2}>
+        <Typography variant="h5" color="primary" display="flex" alignItems="center">
+          <Box mr={1}>{image}</Box>
+          {name}
+        </Typography>
+        <Box display="flex" alignItems="center">
+          {rating}/5 <StarIcon fontSize="small" sx={{ color: yellow[700] }} /> &#8226; {dollars}
+        </Box>
       </Box>
       <List dense>
         <ListItem>
