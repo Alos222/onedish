@@ -187,7 +187,9 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   // Any existing OneDishes for this vendor
   const vendorOneDishes: OneDishTempData[] = (vendor?.oneDishes || []).map((o) => ({ ...o, id: uuidv4().toString() }));
   // Combine with new OneDishes that we need to upload
-  const allOneDishes = vendorOneDishes.concat(oneDishFileUploads);
+  const allOneDishes = vendorOneDishes
+    .concat(oneDishFileUploads)
+    .filter((o) => oneDishesToDelete.some((toDelete) => o.id !== toDelete.id));
 
   const canSelectMore = allOneDishes.length < allowedOneDishes;
   const restrictedOneDishes = allOneDishes.slice(0, allowedOneDishes);
