@@ -471,10 +471,18 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
                 <Grid item xs={12} sm={6} md={4} key={oneDish.id}>
                   <OneDishCard
                     key={oneDish.id}
-                    url={oneDish.url || oneDish.newFileUrl || oneDish.fileString}
-                    title={oneDish.title}
-                    description={oneDish.description}
-                    onDelete={() => setOneDishesToDelete((prev) => [...prev, oneDish])}
+                    oneDish={{
+                      id: oneDish.id,
+                      // TODO Check the url for value
+                      url: oneDish.url || oneDish.newFileUrl || oneDish.fileString || '',
+                      title: oneDish.title,
+                      description: oneDish.description,
+                    }}
+                    actions={
+                      <Button onClick={() => setOneDishesToDelete((prev) => [...prev, oneDish])} color="error">
+                        Delete
+                      </Button>
+                    }
                   />
                 </Grid>
               ))}

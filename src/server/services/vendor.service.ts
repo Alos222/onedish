@@ -43,6 +43,23 @@ export class VendorService implements IVendorService {
     return vendors;
   }
 
+  /**
+   * Gets all vendors that have OneDishes
+   *
+   * TODO Need to do infinite scrolling
+   * @returns
+   */
+  async getAllOneDishVendors(): Promise<Vendor[]> {
+    const vendors = await this.prisma.vendor.findMany({
+      where: {
+        oneDishes: {
+          isEmpty: false,
+        },
+      },
+    });
+    return vendors;
+  }
+
   async getPaginatedResults(
     sortType: string | undefined | null,
     column: string,

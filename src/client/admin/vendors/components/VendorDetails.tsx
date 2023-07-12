@@ -41,12 +41,7 @@ export default function VendorDetails({ vendor, onVendorUpdated }: VendorDetails
           <Grid container mt={2} spacing={2}>
             {oneDishes.map((oneDish) => (
               <Grid item xs={12} sm={6} md={4} key={oneDish.id}>
-                <OneDishCard
-                  key={oneDish.id}
-                  url={oneDish.url}
-                  title={oneDish.title}
-                  description={oneDish.description}
-                />
+                <OneDishCard key={oneDish.id} oneDish={oneDish} />
               </Grid>
             ))}
           </Grid>
