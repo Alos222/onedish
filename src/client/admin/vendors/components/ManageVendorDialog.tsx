@@ -27,6 +27,7 @@ import { AddVendorRequest } from 'src/types/request/vendors/add-vendor.request';
 import { ImageData } from 'src/types/image-data';
 import LoadingButton from 'src/client/common/components/LoadingButton';
 import { DeleteVendorPhotosRequest } from 'src/types/request/vendors/delete-vendor-photos.request';
+import ODDialog from 'src/client/common/components/ODDialog';
 
 interface ManageVendorDialogProps {
   /**
@@ -340,162 +341,146 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   const selectedOneDishesCount = restrictedOneDishes.length;
 
   return (
-    <>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        {text}
-      </Button>
-      <Dialog open={open} fullWidth maxWidth="lg">
-        <DialogTitle>
-          {text}
-          <IconButton
-            aria-label="close"
-            onClick={handleClose}
-            sx={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ mt: 2 }}>
-          <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
-            <Typography variant="h5" color="primary">
-              Restaurant details and tier
-            </Typography>
-            <Typography variant="body1" color="secondary">
-              Search for a restaurant to quickly fill details
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={5}>
-                <ODTextField
-                  id="placeName"
-                  label="Name"
-                  placeholder="Name of the restaurant"
-                  value={placeName}
-                  onChange={(e) => setPlaceName(e.target.value)}
-                />
-                <ODTextField
-                  id="placeAddress"
-                  label="Address"
-                  placeholder="Address of the restaurant"
-                  value={placeAddress}
-                  onChange={(e) => setPlaceAddress(e.target.value)}
-                  sx={{ mb: 3 }}
-                />
-
-                <Typography variant="body1" color="primary">
-                  Tier
-                </Typography>
-                <OneDishTier
-                  tier="first"
-                  tierDescription="With the first tier, you get a single OneDish"
-                  selectedTier={selectedTier}
-                  onTierSelected={(tier) => setSelectedTier(tier)}
-                />
-
-                <OneDishTier
-                  tier="second"
-                  tierDescription="With the second tier, you get 6 OneDish selections"
-                  selectedTier={selectedTier}
-                  onTierSelected={(tier) => setSelectedTier(tier)}
-                />
-
-                <OneDishTier
-                  tier="third"
-                  tierDescription="With the third tier, you get 12 OneDish selections"
-                  selectedTier={selectedTier}
-                  onTierSelected={(tier) => setSelectedTier(tier)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={7}>
-                <GoogleMap
-                  place={vendor?.place}
-                  searchable
-                  ContentInfoActions={(place) => (
-                    <Button
-                      variant="outlined"
-                      sx={{ mt: 1 }}
-                      onClick={() => {
-                        if (place) {
-                          setPlaceName(place.name);
-                          setPlaceAddress(place.formatted_address);
-                          setPlace(place);
-                        }
-                      }}
-                    >
-                      Use this place
-                    </Button>
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="body1" color="primary">
-                  Restaurant Image
-                </Typography>
-                <PhotoListSelect
-                  photos={place?.photos || []}
-                  selectedImage={vendorImage}
-                  label="Use for Restaurant"
-                  onPhotoSelected={(photo) => {
-                    setVendorImage(photo);
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </Paper>
-
-          <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
-            <Typography gutterBottom variant="h5" component="div" color="primary">
-              Choose OneDish ({`${selectedOneDishesCount}/${allowedOneDishes}`})
-            </Typography>
-
-            {canSelectMore && (
-              <>
-                <Typography gutterBottom variant="body1" component="div" color="secondary">
-                  Select an image from Google on the right, or upload a file
-                </Typography>
-                <OneDishUpload
-                  vendor={vendor}
-                  place={place}
-                  onConfirm={(data) => setOneDishFileUploads((prev) => [...prev, data])}
-                />
-                <Divider sx={{ pt: 2 }} />
-              </>
-            )}
-
-            <Grid container mt={2} spacing={2}>
-              {restrictedOneDishes.map((oneDish) => (
-                <Grid item xs={12} sm={6} md={4} key={oneDish.id}>
-                  <OneDishCard
-                    key={oneDish.id}
-                    oneDish={{
-                      id: oneDish.id,
-                      // TODO Check the url for value
-                      url: oneDish.url || oneDish.newFileUrl || oneDish.fileString || '',
-                      title: oneDish.title,
-                      description: oneDish.description,
-                    }}
-                    actions={
-                      <Button onClick={() => setOneDishesToDelete((prev) => [...prev, oneDish])} color="error">
-                        Delete
-                      </Button>
-                    }
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Paper>
-        </DialogContent>
-        <DialogActions>
+    <ODDialog
+      buttonText={text}
+      title={text}
+      onClose={() => clearData()}
+      Actions={
+        <>
           <Button onClick={handleClose}>Cancel</Button>
           <LoadingButton loading={isLoading} onClick={handleSave}>
             Save
           </LoadingButton>
-        </DialogActions>
-      </Dialog>
-    </>
+        </>
+      }
+    >
+      <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+        <Typography variant="h5" color="primary">
+          Restaurant details and tier
+        </Typography>
+        <Typography variant="body1" color="secondary">
+          Search for a restaurant to quickly fill details
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={5}>
+            <ODTextField
+              id="placeName"
+              label="Name"
+              placeholder="Name of the restaurant"
+              value={placeName}
+              onChange={(e) => setPlaceName(e.target.value)}
+            />
+            <ODTextField
+              id="placeAddress"
+              label="Address"
+              placeholder="Address of the restaurant"
+              value={placeAddress}
+              onChange={(e) => setPlaceAddress(e.target.value)}
+              sx={{ mb: 3 }}
+            />
+
+            <Typography variant="body1" color="primary">
+              Tier
+            </Typography>
+            <OneDishTier
+              tier="first"
+              tierDescription="With the first tier, you get a single OneDish"
+              selectedTier={selectedTier}
+              onTierSelected={(tier) => setSelectedTier(tier)}
+            />
+
+            <OneDishTier
+              tier="second"
+              tierDescription="With the second tier, you get 6 OneDish selections"
+              selectedTier={selectedTier}
+              onTierSelected={(tier) => setSelectedTier(tier)}
+            />
+
+            <OneDishTier
+              tier="third"
+              tierDescription="With the third tier, you get 12 OneDish selections"
+              selectedTier={selectedTier}
+              onTierSelected={(tier) => setSelectedTier(tier)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={7}>
+            <GoogleMap
+              place={vendor?.place}
+              searchable
+              ContentInfoActions={(place) => (
+                <Button
+                  variant="outlined"
+                  sx={{ mt: 1 }}
+                  onClick={() => {
+                    if (place) {
+                      setPlaceName(place.name);
+                      setPlaceAddress(place.formatted_address);
+                      setPlace(place);
+                    }
+                  }}
+                >
+                  Use this place
+                </Button>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="body1" color="primary">
+              Restaurant Image
+            </Typography>
+            <PhotoListSelect
+              photos={place?.photos || []}
+              selectedImage={vendorImage}
+              label="Use for Restaurant"
+              onPhotoSelected={(photo) => {
+                setVendorImage(photo);
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Paper>
+
+      <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+        <Typography gutterBottom variant="h5" component="div" color="primary">
+          Choose OneDish ({`${selectedOneDishesCount}/${allowedOneDishes}`})
+        </Typography>
+
+        {canSelectMore && (
+          <>
+            <Typography gutterBottom variant="body1" component="div" color="secondary">
+              Select an image from Google on the right, or upload a file
+            </Typography>
+            <OneDishUpload
+              vendor={vendor}
+              place={place}
+              onConfirm={(data) => setOneDishFileUploads((prev) => [...prev, data])}
+            />
+            <Divider sx={{ pt: 2 }} />
+          </>
+        )}
+
+        <Grid container mt={2} spacing={2}>
+          {restrictedOneDishes.map((oneDish) => (
+            <Grid item xs={12} sm={6} md={4} key={oneDish.id}>
+              <OneDishCard
+                key={oneDish.id}
+                oneDish={{
+                  id: oneDish.id,
+                  // TODO Check the url for value
+                  url: oneDish.url || oneDish.newFileUrl || oneDish.fileString || '',
+                  title: oneDish.title,
+                  description: oneDish.description,
+                }}
+                actions={
+                  <Button onClick={() => setOneDishesToDelete((prev) => [...prev, oneDish])} color="error">
+                    Delete
+                  </Button>
+                }
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Paper>
+    </ODDialog>
   );
 }
