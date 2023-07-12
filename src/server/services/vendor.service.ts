@@ -50,29 +50,6 @@ export class VendorService implements IVendorService {
     skip: number,
     take: number
   ) {
-    this.logger.info('query', {
-      count: {
-        where: {
-          [column]: {
-            mode: 'insensitive',
-            contains: searchQuery,
-          },
-        },
-      },
-      findMany: {
-        skip,
-        take,
-        where: {
-          [column]: {
-            mode: 'insensitive',
-            contains: searchQuery,
-          },
-        },
-        orderBy: {
-          [column]: sortType ?? 'asc',
-        },
-      },
-    });
     const results = await this.prisma.$transaction([
       this.prisma.vendor.count({
         where: {
