@@ -13,13 +13,13 @@ import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface UserMenuProps {
   user: User;
 }
 
 export default function UserMenu({ user }: UserMenuProps) {
-  const router = useRouter();
   const pathname = usePathname();
   // const { displayError } = useNotifications();
 
@@ -93,15 +93,16 @@ export default function UserMenu({ user }: UserMenuProps) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem
-          onClick={async () => {
-            router.push('/admin');
-          }}
-        >
-          <ListItemIcon>
-            <AdminPanelSettingsIcon fontSize="small" />
-          </ListItemIcon>
-          Admin
+        <MenuItem>
+          <Link
+            href="/admin"
+            style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}
+          >
+            <ListItemIcon>
+              <AdminPanelSettingsIcon fontSize="small" />
+            </ListItemIcon>
+            Admin
+          </Link>
         </MenuItem>
         <MenuItem
           onClick={async () => {
