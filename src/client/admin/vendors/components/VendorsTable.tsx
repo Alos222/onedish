@@ -11,7 +11,7 @@ import ManageVendorDialog from './ManageVendorDialog';
 
 const headCells: HeadCell<Vendor>[] = [
   {
-    id: 'name',
+    typeId: 'name',
     label: 'Name',
     numeric: false,
     disablePadding: false,
@@ -23,7 +23,23 @@ const headCells: HeadCell<Vendor>[] = [
     numeric: false,
     disablePadding: false,
   },
+  {
+    id: 'tier',
+    label: 'Tier',
+    numeric: false,
+    disablePadding: false,
+  },
+  {
+    id: 'onedishcount',
+    label: 'OneDishes',
+    numeric: false,
+    disablePadding: false,
+  },
 ];
+
+function capitalizeFirstLetter(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
 
 export default function VendorsTable() {
   const [vendors, setVendors] = React.useState<Vendor[]>([]);
@@ -72,6 +88,8 @@ export default function VendorsTable() {
               <Link href={`/admin/vendors/${item.id}`}>{item.name}</Link>
             </TableCell>
             <TableCell>{item.address}</TableCell>
+            <TableCell>{capitalizeFirstLetter(item.tier || '')}</TableCell>
+            <TableCell>{item.oneDishes.length}</TableCell>
           </TableRow>
         );
       }}

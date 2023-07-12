@@ -15,7 +15,14 @@ import { useDebounce } from 'use-debounce';
 export type Order = 'asc' | 'desc';
 
 export interface HeadCell<T> {
-  id: keyof T;
+  /**
+   * Use this if you don't need sorting
+   */
+  id?: string;
+  /**
+   * Use this for a sortable cell
+   */
+  typeId?: keyof T;
   label: string;
   numeric: boolean;
   disablePadding: boolean;
@@ -40,19 +47,19 @@ function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
       <TableRow>
         {headCells.map((headCell) => (
           <TableCell
-            key={headCell.id.toString()}
+            key={headCell.id?.toString() || headCell.typeId?.toString()}
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
+            sortDirection={orderBy === headCell.typeId ? order : false}
           >
             <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
+              active={orderBy === headCell.typeId}
+              direction={orderBy === headCell.typeId ? order : 'asc'}
+              onClick={headCell.typeId && createSortHandler(headCell.typeId)}
               disabled={!headCell.sortable}
             >
               {headCell.label}
-              {orderBy === headCell.id ? (
+              {orderBy === headCell.typeId ? (
                 <Box
                   component="span"
                   sx={{
