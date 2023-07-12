@@ -1,20 +1,26 @@
-import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
-// import { localhostAccessTokenRedirectMiddleware } from 'src/server/middlewares/appMiddlewares/localhostAccessTokenRedirectMiddleware';
-// import { secureApiMiddleware } from 'src/server/middlewares/appMiddlewares/secureApiMiddleware';
-// import { securePageMiddleware } from 'src/server/middlewares/appMiddlewares/securePageMiddleware';
-export { default } from 'next-auth/middleware';
+import withAuth from 'next-auth/middleware';
+import { AdminRoute } from 'app/routes';
 
-// export async function middleware(request: NextRequest, event: NextFetchEvent) {
-//   if (request.nextUrl.pathname.startsWith('/api')) {
-//     if (request.nextUrl.pathname.startsWith('/api/secure')) {
-//       // return secureApiMiddleware(request, event);
-//     }
-//     return NextResponse.next();
-//   }
+export default withAuth(
+  // `withAuth` augments your `Request` with the user's token.
+  function middleware(req) {
+    console.log(req.nextauth.token);
+  },
+  {
+    callbacks: {
+      authorized({ req, token }) {
+        const { nextUrl } = req;
 
-//   // return securePageMiddleware(request, event);
-//   return NextResponse.next();
-// }
+        // The admin route is the only one that needs auth right now
+        if (nextUrl.pathname.startsWith(AdminRoute.href)) {
+          return !!token;
+        }
+
+        return true;
+      },
+    },
+  }
+);
 
 export const config = {
   matcher: [
