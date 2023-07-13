@@ -4,7 +4,13 @@ import StoreIcon from '@mui/icons-material/Store';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import { SvgIconTypeMap } from '@mui/material';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
-import { AdminRouteName, HomeRouteName, VendorDetailsRouteName, VendorsRouteName } from './route-names';
+import {
+  AdminRouteName,
+  HomeRouteName,
+  RestaurantRouteName,
+  VendorDetailsRouteName,
+  VendorsRouteName,
+} from './route-names';
 
 export type SvgIconComponent = OverridableComponent<SvgIconTypeMap>;
 
@@ -21,6 +27,13 @@ export const HomeRoute: OneDishRoute = {
   name: HomeRouteName,
   href: '/',
   icon: HomeIcon,
+};
+
+export const RestaurantRoute: OneDishRoute = {
+  name: RestaurantRouteName,
+  href: '/restaurant/[a-zA-Z0-9]+',
+  regex: true,
+  icon: StorefrontIcon,
 };
 
 export const AdminRoute: OneDishRoute = {
@@ -44,6 +57,6 @@ export const VendorDetailsRoute: OneDishRoute = {
   icon: StorefrontIcon,
 };
 
-const routes: OneDishRoute[] = [HomeRoute, AdminRoute, VendorsRoute, VendorDetailsRoute];
+const routes: OneDishRoute[] = [HomeRoute, RestaurantRoute, AdminRoute, VendorsRoute, VendorDetailsRoute];
 
 export default routes;

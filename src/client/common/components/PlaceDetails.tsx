@@ -6,8 +6,8 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import StarIcon from '@mui/icons-material/Star';
 import MapIcon from '@mui/icons-material/Map';
 import { Vendor, VendorPlace } from '@prisma/client';
-import Link from 'next/link';
 import { green, yellow } from '@mui/material/colors';
+import LinkInNewWindow from './LinkInNewWindow';
 
 interface PlaceDetailsProps {
   vendor?: Vendor;
@@ -61,13 +61,15 @@ export default function PlaceDetails({ vendor, place: p }: PlaceDetailsProps) {
           <ListItemIcon>
             <PublicIcon />
           </ListItemIcon>
-          <ListItemText primary={website ? <Link href={website}>{website}</Link> : 'Link not available'} />
+          <ListItemText primary={website ? <LinkInNewWindow href={website} text={website} /> : 'Link not available'} />
         </ListItem>
         <ListItem>
           <ListItemIcon>
             <MapIcon />
           </ListItemIcon>
-          <ListItemText primary={url ? <Link href={url}>View on Google Maps</Link> : 'Link not available'} />
+          <ListItemText
+            primary={url ? <LinkInNewWindow href={url} text="View on Google Maps" /> : 'Link not available'}
+          />
         </ListItem>
       </List>
     </>

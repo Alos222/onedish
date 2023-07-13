@@ -14,13 +14,13 @@ export default function OneDishGrid({ vendors }: OneDishGridProps) {
         const { oneDishes } = vendor;
         const oneDish = oneDishes[0];
         return (
-          <Grid item xs={12} sm={6} md={4} display="flex" height="auto">
+          <Grid item xs={12} sm={6} md={4} display="flex" height="auto" key={oneDish.id}>
             <OneDishCard
               oneDish={oneDish}
               vendor={vendor}
               actions={
-                <Button LinkComponent={Link} href="">
-                  More details
+                <Button LinkComponent={Link} href={`/restaurant/${vendor.id}`}>
+                  More Details
                 </Button>
               }
             />

@@ -8,7 +8,7 @@ import OneDishCard from 'src/client/common/components/OneDishCard';
 
 interface VendorDetailsProps {
   vendor: Vendor;
-  onVendorUpdated: (vendor: Vendor) => void;
+  onVendorUpdated?: (vendor: Vendor) => void;
 }
 
 export default function VendorDetails({ vendor, onVendorUpdated }: VendorDetailsProps) {
@@ -17,31 +17,28 @@ export default function VendorDetails({ vendor, onVendorUpdated }: VendorDetails
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={4}>
-        <Card sx={{ maxWidth: 450 }}>
-          {/* {oneDish && <CardMedia sx={{ height: 200 }} image={oneDish.url} title="Vendor OneDish" />} */}
+        <Card sx={{ mb: 2 }}>
           <CardContent>
             <PlaceDetails vendor={vendor} />
-            <ManageVendorDialog vendor={vendor} onVendor={(vendor) => onVendorUpdated(vendor)} />
+            {onVendorUpdated && <ManageVendorDialog vendor={vendor} onVendor={(vendor) => onVendorUpdated(vendor)} />}
           </CardContent>
           {vendorImage && <CardMedia sx={{ height: 200 }} image={vendorImage.url} title="Vendor image" />}
         </Card>
-      </Grid>
-      <Grid item xs={12} sm={8}>
         <GoogleMap place={place} />
         <Typography variant="subtitle2" color="secondary">
-          Details on map may differ than those saved for a vendor
+          Details on map may differ than those saved for a restaurant
         </Typography>
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} sm={8}>
         <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
           <Typography gutterBottom variant="h5" component="div" color="primary">
             OneDish
           </Typography>
 
-          <Grid container mt={2} spacing={2}>
+          <Grid container mt={2} spacing={2} justifyContent="center">
             {oneDishes.map((oneDish) => (
-              <Grid item xs={12} sm={6} md={4} key={oneDish.id}>
-                <OneDishCard key={oneDish.id} oneDish={oneDish} />
+              <Grid item md={12} lg={6} xl={4} key={oneDish.id}>
+                <OneDishCard key={oneDish.id} oneDish={oneDish} vendor={vendor} />
               </Grid>
             ))}
           </Grid>
