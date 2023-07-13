@@ -24,7 +24,12 @@ export interface OneDishTempData extends Pick<OneDish, 'title' | 'description'> 
   /**
    * File data, if this is a new file upload
    */
-  file?: File;
+  fileBlob?: Blob;
+
+  /**
+   * Name of the file
+   */
+  fileName?: string;
 
   /**
    * The file data as a string

@@ -7,6 +7,7 @@ import { Vendor, VendorPhoto, VendorPlace } from '@prisma/client';
 import { useNotifications } from '../hooks/useNotifications';
 import PhotoListSelect from './PhotoListSelect';
 import { OneDishTempData } from 'src/types';
+import FileUploadButton from './FileUploadButton';
 
 interface FileUploadProps {
   vendor?: Vendor;
@@ -19,7 +20,8 @@ interface FileUploadProps {
 export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadProps) {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [file, setFile] = useState<File | undefined>();
+  const [fileBlob, setFileBlob] = useState<Blob | undefined>();
+  const [fileName, setFileName] = useState<string | undefined>();
   const [fileString, setFileString] = useState<string | undefined>();
   const [selectedImage, setSelectedImage] = useState<VendorPhoto | null>(null);
   const [url, setUrl] = useState<string | undefined>();
@@ -30,7 +32,7 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
   const { displayError } = useNotifications();
 
   const confirmOneDish = () => {
-    if (!file && !url) {
+    if (!url && !fileBlob) {
       displayError('You need to select or upload an image');
       return;
     }
@@ -44,14 +46,15 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
       title: title?.trim(),
       description: description?.trim(),
       newFileUrl: url,
-      file,
+      fileBlob,
+      fileName,
       fileString,
     };
     onConfirm(data);
 
     setTitle('');
     setDescription('');
-    setFile(undefined);
+    setFileBlob(undefined);
     setFileString('');
     setUrl('');
     setSelectedImage(null);
@@ -69,32 +72,17 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
               <PhotoIcon />
             </Box>
           )}
-          <Button component="label" variant="outlined" sx={{ mt: 2 }}>
-            Upload File
-            <input
-              type="file"
-              hidden
-              ref={inputRef}
-              onChange={(event) => {
-                if (event.target.files?.length) {
-                  const selectedFile = event.target.files[0];
-                  setFile(selectedFile);
+          <FileUploadButton
+            onFileUploaded={(compressedFile, compressedFileString, fileName) => {
+              setFileString(compressedFileString);
+              setFileBlob(compressedFile);
+              setFileName(fileName);
 
-                  // Clear out any image selections
-                  setSelectedImage(null);
-                  setUrl(undefined);
-
-                  const reader = new FileReader();
-                  reader.onload = function (e) {
-                    if (e.target?.result) {
-                      setFileString(e.target?.result.toString());
-                    }
-                  };
-                  reader.readAsDataURL(selectedFile);
-                }
-              }}
-            />
-          </Button>
+              setSelectedImage(null);
+              setUrl(undefined);
+            }}
+            ref={inputRef}
+          />
 
           <ODTextField
             id="title"
@@ -127,7 +115,6 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
             setUrl(photo?.url);
 
             // Clear out any file uploads
-            setFile(undefined);
             setFileString(undefined);
             if (inputRef.current) {
               inputRef.current.value = '';

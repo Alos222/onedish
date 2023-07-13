@@ -1,11 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import CloseIcon from '@mui/icons-material/Close';
-import { Divider, Grid, IconButton, Paper, Typography } from '@mui/material';
+import { Divider, Grid, Paper, Typography } from '@mui/material';
 import type { OneDish, Vendor, VendorPhoto, VendorPlace } from '@prisma/client';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
@@ -57,7 +52,6 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   const isLoading = loadingSave || loadingUploadFromFile || loadingUploadFromUrl || loadingDelete;
 
   const { displayInfo, displayError } = useNotifications();
-  const [open, setOpen] = useState(false);
 
   // The name and address details of a vendor
   // Can be autofilled by selecting something on the map, or manually entered
@@ -82,11 +76,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
     setPlace(null);
   };
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
   const handleClose = () => {
-    setOpen(false);
     clearData();
   };
 
@@ -150,8 +140,12 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         const formData = new FormData();
         let hasUploads = false;
         oneDishFileUploads.forEach(async (oneDishTempData) => {
-          if (oneDishTempData?.file) {
-            formData.append(oneDishTempData.id, oneDishTempData.file, oneDishTempData.file.name);
+          if (oneDishTempData?.fileBlob) {
+            formData.append(
+              oneDishTempData.id,
+              oneDishTempData.fileBlob,
+              oneDishTempData.fileName || oneDishTempData.id
+            );
             hasUploads = true;
           }
         });

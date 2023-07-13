@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import type { Prisma, Vendor } from '@prisma/client';
 import { LoggerService } from './logger.service';
 import { VendorWithoutId } from 'src/types';
-import { DefaultArgs } from '@prisma/client/runtime';
 
 export interface IVendorService {}
 
