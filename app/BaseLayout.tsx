@@ -1,7 +1,7 @@
 'use client';
 
+import { ThemeProvider, Box } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, ThemeProvider } from '@mui/system';
 import { THEME } from 'app/theme';
 import { SnackbarProvider } from 'notistack';
 
@@ -14,9 +14,7 @@ interface BaseLayoutProps {
  * @param param0
  * @returns
  */
-export default function BaseLayout({
-  children,
-}: BaseLayoutProps) {
+export default function BaseLayout({ children }: BaseLayoutProps) {
   return (
     <SnackbarProvider maxSnack={3}>
       <ThemeProvider theme={THEME}>
