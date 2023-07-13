@@ -10,7 +10,6 @@ export async function GET(request: Request) {
   return apiMiddleware(logger, request, async () => {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
-    console.log('searching', { search });
 
     const data = await vendorService.searchVendors(search);
     const response: VendorSearchResponse = {

@@ -40,7 +40,7 @@ export async function POST(request: Request, { params }: { params: { vendorId: s
           responseType: 'arraybuffer',
         });
         const vendorImageData = Buffer.from(response.data, 'binary');
-        const s3Url = await awsService.uploadVendorPhoto(vendorId, `${vendorId}.png`, vendorImageData);
+        const s3Url = await awsService.uploadVendorPhoto(vendorId, `${data.vendorImageData.id}.png`, vendorImageData);
         responseData.vendorImageData = {
           id: data.vendorImageData.id,
           url: s3Url,
