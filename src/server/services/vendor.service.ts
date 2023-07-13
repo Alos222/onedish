@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import type { Prisma, Vendor } from '@prisma/client';
+import type { Vendor } from '@prisma/client';
 import { LoggerService } from './logger.service';
 import { VendorWithoutId } from 'src/types';
 
@@ -59,12 +59,19 @@ export class VendorService implements IVendorService {
     return vendors;
   }
 
+  async deleteVendor(vendorId: string): Promise<void> {
+    this.logger.info('delete vendor', { vendorId });
+    const result = await this.prisma.vendor.delete({ where: { id: vendorId } });
+    this.logger.info('finished deleting vendor', { result });
+    return;
+  }
+
   async getPaginatedResults(
     sortType: string | undefined | null,
     column: string,
     searchQuery: string,
     skip: number,
-    take: number
+    take: number,
   ) {
     const results = await this.prisma.$transaction([
       this.prisma.vendor.count({

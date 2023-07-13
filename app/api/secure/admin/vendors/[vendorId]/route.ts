@@ -25,3 +25,20 @@ export async function PATCH(request: Request, { params }: { params: { vendorId: 
     }
   });
 }
+
+export async function DELETE(request: Request, { params }: { params: { vendorId: string } }) {
+  return secureApiMiddleware(logger, request, async () => {
+    try {
+      const { vendorId } = params;
+
+      logger.info('DELETE vendor', { vendorId });
+      await vendorService.deleteVendor(vendorId);
+
+      return { data: true };
+    } catch (e) {
+      console.error(e);
+
+      return { error: 'Could not upate vendor' };
+    }
+  });
+}

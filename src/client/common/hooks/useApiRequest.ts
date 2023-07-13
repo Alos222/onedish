@@ -98,6 +98,13 @@ export const useApiRequest = (apiUrl: string) => {
     return result;
   };
 
+  const deleteApi = async <Response>(url: string): Promise<ApiResponse<Response>> => {
+    const result = await doFetch<Request, Response>(url, {
+      method: 'DELETE',
+    });
+    return result;
+  };
+
   /**
    * We probably should not be including data in a DELETE, but I'm being lazy now
    * @param url
@@ -106,7 +113,7 @@ export const useApiRequest = (apiUrl: string) => {
    */
   const deleteWithData = async <Request, Response>(
     url: string,
-    requestData: Request
+    requestData: Request,
   ): Promise<ApiResponse<Response>> => {
     const result = await doFetch<Request, Response>(url, {
       body: JSON.stringify(requestData),
@@ -115,5 +122,5 @@ export const useApiRequest = (apiUrl: string) => {
     return result;
   };
 
-  return { get, post, postWithUrl, postFile, patch, deleteWithData, loading };
+  return { get, post, postWithUrl, postFile, patch, deleteApi, deleteWithData, loading };
 };

@@ -163,7 +163,9 @@ export default function SortTable<T>({
         )}
         {!loading && data.length === 0 && (
           <Box display="flex" justifyContent="center" py={5}>
-            <Typography variant="body1">Nothing here</Typography>
+            <Typography variant="body1" color="secondary">
+              Nothing here
+            </Typography>
           </Box>
         )}
         {!loading && !!data.length && (

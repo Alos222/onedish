@@ -101,7 +101,9 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
           />
         </CardContent>
         <CardActions>
-          <Button onClick={confirmOneDish}>Add OneDish</Button>
+          <Button onClick={confirmOneDish} variant="contained">
+            Add OneDish
+          </Button>
         </CardActions>
       </Grid>
 
