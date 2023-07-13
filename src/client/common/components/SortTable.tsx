@@ -10,7 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
 import { CircularProgress, TextField, Typography } from '@mui/material';
-import { useDebounce } from 'use-debounce';
+import { useDebouncedCallback } from 'use-debounce';
 
 export type Order = 'asc' | 'desc';
 
@@ -41,6 +41,12 @@ function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
   const createSortHandler = (property: keyof T) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
+
+  console.log({
+    orderBy,
+    order,
+    typeId: headCells[0].typeId,
+  });
 
   return (
     <TableHead>
@@ -92,9 +98,19 @@ interface SortTableProps<T> {
   initialOrderBy: keyof T;
   loading?: boolean;
   Actions?: React.ReactNode;
-  onPagePropsChange: (page: number, rowsPerPage: number, order: Order, orderBy: keyof T, searchText: string) => void;
+  onPagePropsChange: (
+    page: number,
+    rowsPerPage: number,
+    order: Order,
+    orderBy: keyof T,
+    searchText: string,
+  ) => Promise<void>;
   children: (item: T) => React.ReactNode;
 }
+
+const initialOrder = 'asc';
+const initialRowsPerPage = 20;
+const initialPage = 0;
 
 export default function SortTable<T>({
   data,
@@ -106,32 +122,45 @@ export default function SortTable<T>({
   onPagePropsChange,
   children,
 }: SortTableProps<T>) {
-  const [order, setOrder] = React.useState<Order>('asc');
+  const [order, setOrder] = React.useState<Order>(initialOrder);
   const [orderBy, setOrderBy] = React.useState<keyof T>(initialOrderBy);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(20);
-  const [text, setText] = React.useState('');
-  const [searchText] = useDebounce(text, 1000);
+  const [page, setPage] = React.useState(initialPage);
+  const [rowsPerPage, setRowsPerPage] = React.useState(initialRowsPerPage);
+  const [searchText, setSearchText] = React.useState('');
+
+  const debounced = useDebouncedCallback(async (value) => {
+    setSearchText(value);
+    onPagePropsChange(page, rowsPerPage, order, orderBy, value);
+  }, 1000);
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof T) => {
     const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const newOrder = isAsc ? 'desc' : 'asc';
+    setOrder(newOrder);
     setOrderBy(property);
+    onPagePropsChange(page, rowsPerPage, newOrder, property, searchText);
   };
 
   const handleChangePage = async (event: unknown, newPage: number) => {
     setPage(newPage);
+    onPagePropsChange(newPage, rowsPerPage, order, orderBy, searchText);
   };
 
   const handleChangeRowsPerPage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const rows = parseInt(event.target.value, 10);
     setRowsPerPage(rows);
     setPage(0);
+    onPagePropsChange(0, rows, order, orderBy, searchText);
   };
 
+  const [initialLoad, setInitialLoad] = React.useState(true);
   React.useEffect(() => {
-    onPagePropsChange(page, rowsPerPage, order, orderBy, searchText);
-  }, [page, rowsPerPage, order, orderBy, searchText]);
+    onPagePropsChange(initialPage, initialRowsPerPage, initialOrder, initialOrderBy, '').then(() => {
+      setInitialLoad(false);
+    });
+    // Only want to run this once on load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - total) : 0;
@@ -145,7 +174,7 @@ export default function SortTable<T>({
           variant="standard"
           defaultValue=""
           onChange={(e) => {
-            setText(e.target.value);
+            debounced(e.target.value);
           }}
           sx={{ mt: 1, flexGrow: 1 }}
         />
@@ -156,14 +185,14 @@ export default function SortTable<T>({
         )}
       </Box>
       <Paper sx={{ width: '100%', my: 2 }}>
-        {!loading && data.length === 0 && (
+        {!initialLoad && !loading && data.length === 0 && (
           <Box display="flex" justifyContent="center" py={5}>
             <Typography variant="body1" color="secondary">
               Nothing here
             </Typography>
           </Box>
         )}
-        {!!data.length && (
+        {(initialLoad || !!data.length) && (
           <TableContainer>
             <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
               <EnhancedTableHead
@@ -172,12 +201,18 @@ export default function SortTable<T>({
                 orderBy={orderBy}
                 onRequestSort={handleRequestSort}
               />
-              {loading && (
-                <Box display="flex" justifyContent="center" py={3}>
-                  <CircularProgress />
-                </Box>
+              {(initialLoad || loading) && (
+                <TableBody>
+                  <TableRow>
+                    <TableCell colSpan={headCells.length}>
+                      <Box display="flex" justifyContent="center">
+                        <CircularProgress />
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
               )}
-              {!loading && (
+              {!initialLoad && !loading && (
                 <TableBody>
                   {data.map((row) => children(row))}
                   {emptyRows > 0 && (

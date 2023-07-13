@@ -75,29 +75,26 @@ export default function VendorsTable() {
 
   const [vendorToDelete, setVendorToDelete] = React.useState<Vendor | undefined>(undefined);
 
-  const onPagePropsChange = async (
-    page: number,
-    rowsPerPage: number,
-    order: Order,
-    orderBy: keyof Vendor,
-    searchText: string,
-  ) => {
-    let query = `?skip=${
-      page * rowsPerPage
-    }&take=${rowsPerPage}&sortType=${order}&column=${orderBy}&searchQuery=${searchText}`;
-    const response = await get<VendorPageData>(query);
-    if (response.error) {
-      displayError(response.error);
-      return;
-    }
-    if (!response.data) {
-      displayError('Could not get vendors');
-      return;
-    }
-    const { data: vendors, total } = response.data;
-    setVendors(vendors);
-    setTotal(total);
-  };
+  const onPagePropsChange = React.useCallback(
+    async (page: number, rowsPerPage: number, order: Order, orderBy: keyof Vendor, searchText: string) => {
+      let query = `?skip=${
+        page * rowsPerPage
+      }&take=${rowsPerPage}&sortType=${order}&column=${orderBy}&searchQuery=${searchText}`;
+      const response = await get<VendorPageData>(query);
+      if (response.error) {
+        displayError(response.error);
+        return;
+      }
+      if (!response.data) {
+        displayError('Could not get vendors');
+        return;
+      }
+      const { data: vendors, total } = response.data;
+      setVendors(vendors);
+      setTotal(total);
+    },
+    [displayError, get],
+  );
 
   const deleteVendor = async (vendor: Vendor) => {
     const result = await deleteApi<boolean>(`/${vendor.id}`);

@@ -91,63 +91,6 @@ export default function GoogleMap({ placeId, searchable, ContentInfoActions }: G
   const { displayWarning } = useNotifications();
 
   /**
-   * Loads the Google APIs
-   * @param mapDiv
-   */
-  const loadMap = async (mapDiv: HTMLElement) => {
-    const init = async () => {
-      const l = new Loader({
-        apiKey: ConfigService.googlePlacesApiKey(),
-        version: 'weekly',
-      });
-      setLoader(l);
-      setLoading(true);
-      await initServices(l);
-      setLoading(false);
-    };
-
-    const initServices = async (loader: Loader) => {
-      if (!loader) {
-        console.error('No loader yet!');
-        return;
-      }
-      if (!mapDiv) {
-        return;
-      }
-
-      const { AutocompleteService, PlacesService } = await loader.importLibrary('places');
-      const { Map } = await loader.importLibrary('maps');
-      const map = new Map(mapDiv, { center: { lat: 39.1019503402557, lng: -84.5016085506675 }, zoom: 15 });
-      const infoWindow = new google.maps.InfoWindow();
-
-      const placesService = new PlacesService(map);
-      setAutocompleteService(new AutocompleteService());
-      setPlacesService(placesService);
-      setMap(map);
-      setInfowindow(infoWindow);
-      if (placeId) {
-        // Get an initial place
-        searchMap(placeId, placesService, infoWindow, map);
-      }
-    };
-
-    if (!loader) {
-      init();
-    } else if (!autocompleteService || !placesService || !map) {
-      initServices(loader);
-    }
-  };
-
-  /**
-   * Ref for the map that will load the map once it is rendered
-   */
-  const mapRef = useCallback(async (mapDiv: HTMLElement) => {
-    if (mapDiv !== null) {
-      await loadMap(mapDiv);
-    }
-  }, []);
-
-  /**
    * Opens the hidden content Box element
    */
   const openContent = useCallback(
@@ -160,7 +103,7 @@ export default function GoogleMap({ placeId, searchable, ContentInfoActions }: G
         infoWindow.open(map, marker);
       }
     },
-    [marker],
+    [map],
   );
 
   const createMarker = useCallback(
@@ -187,7 +130,7 @@ export default function GoogleMap({ placeId, searchable, ContentInfoActions }: G
 
       google.maps.event.addListener(newMarker, 'click', () => openContent(infoWindow, newMarker));
     },
-    [map, infowindow, marker],
+    [marker, openContent],
   );
 
   /**
@@ -209,29 +152,95 @@ export default function GoogleMap({ placeId, searchable, ContentInfoActions }: G
    * @param prediction
    * @returns
    */
-  const searchMap = async (
-    placeId: string,
-    placesService?: google.maps.places.PlacesService,
-    infoWindow?: google.maps.InfoWindow,
-    map?: google.maps.Map,
-  ) => {
-    const request: google.maps.places.PlaceDetailsRequest = {
-      placeId: placeId,
-      fields: GooglePlacesKeys.map((key) => key),
-    };
-    if (!placesService) {
-      displayWarning('Google search not initialized, try refreshing the page');
-      return;
-    }
-    placesService.getDetails(request, (place, status) => {
-      if (status === google.maps.places.PlacesServiceStatus.OK && place?.geometry?.location && infoWindow && map) {
-        const vendorPlace = googlePlaceToVendorPlace(place);
-        createMarker(vendorPlace, infoWindow, map);
-        setCurrentPlace(vendorPlace);
+  const searchMap = useCallback(
+    async (
+      placeId: string,
+      placesService?: google.maps.places.PlacesService,
+      infoWindow?: google.maps.InfoWindow,
+      map?: google.maps.Map,
+    ) => {
+      const request: google.maps.places.PlaceDetailsRequest = {
+        placeId: placeId,
+        fields: GooglePlacesKeys.map((key) => key),
+      };
+      if (!placesService) {
+        displayWarning('Google search not initialized, try refreshing the page');
+        return;
       }
-    });
-    return;
-  };
+      placesService.getDetails(request, (place, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && place?.geometry?.location && infoWindow && map) {
+          const vendorPlace = googlePlaceToVendorPlace(place);
+          createMarker(vendorPlace, infoWindow, map);
+          setCurrentPlace(vendorPlace);
+        }
+      });
+      return;
+    },
+    [createMarker, displayWarning],
+  );
+
+  /**
+   * Loads the Google APIs
+   * @param mapDiv
+   */
+  const loadMap = useCallback(
+    async (mapDiv: HTMLElement) => {
+      const init = async () => {
+        const l = new Loader({
+          apiKey: ConfigService.googlePlacesApiKey(),
+          version: 'weekly',
+        });
+        setLoader(l);
+        setLoading(true);
+        await initServices(l);
+        setLoading(false);
+      };
+
+      const initServices = async (loader: Loader) => {
+        if (!loader) {
+          console.error('No loader yet!');
+          return;
+        }
+        if (!mapDiv) {
+          return;
+        }
+
+        const { AutocompleteService, PlacesService } = await loader.importLibrary('places');
+        const { Map } = await loader.importLibrary('maps');
+        const map = new Map(mapDiv, { center: { lat: 39.1019503402557, lng: -84.5016085506675 }, zoom: 15 });
+        const infoWindow = new google.maps.InfoWindow();
+
+        const placesService = new PlacesService(map);
+        setAutocompleteService(new AutocompleteService());
+        setPlacesService(placesService);
+        setMap(map);
+        setInfowindow(infoWindow);
+        if (placeId) {
+          // Get an initial place
+          searchMap(placeId, placesService, infoWindow, map);
+        }
+      };
+
+      if (!loader) {
+        init();
+      } else if (!autocompleteService || !placesService || !map) {
+        initServices(loader);
+      }
+    },
+    [autocompleteService, loader, map, placeId, placesService, searchMap],
+  );
+
+  /**
+   * Ref for the map that will load the map once it is rendered
+   */
+  const mapRef = useCallback(
+    async (mapDiv: HTMLElement) => {
+      if (mapDiv !== null) {
+        await loadMap(mapDiv);
+      }
+    },
+    [loadMap],
+  );
 
   return (
     <>
