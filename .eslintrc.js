@@ -17,9 +17,7 @@ const commonImportRules = {
       ignoreDeclarationSort: true,
     },
   ],
-  'no-restricted-imports': [
-    'warn',
-  ],
+  'no-restricted-imports': ['warn'],
 };
 
 module.exports = {
@@ -32,7 +30,6 @@ module.exports = {
     sourceType: 'module',
     ecmaVersion: 2022,
   },
-  plugins: ['@babel'],
   env: {
     es6: true,
     browser: true,
@@ -85,7 +82,6 @@ module.exports = {
       },
     ], // airbnb is allowing some edge cases
     'no-console': ['error', { allow: ['error'] }], // airbnb is using warn
-    'prefer-destructuring': 'off', // airbnb is using error. destructuring harm grep potential.
     'no-param-reassign': 'off', // airbnb use error
 
     'react/jsx-fragments': ['error', 'syntax'],
@@ -151,6 +147,8 @@ module.exports = {
 
         '@typescript-eslint/no-unused-vars': 'error',
         '@typescript-eslint/no-explicit-any': 'error',
+
+        endOfLine: 0,
       },
     },
     {
