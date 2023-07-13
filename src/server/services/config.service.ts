@@ -2,6 +2,17 @@ export class ConfigService {
   static appName() {
     return process.env.APP_NAME || 'OneDish';
   }
+  static isProduction(): boolean {
+    return process.env.NODE_ENV === 'production';
+  }
+
+  static baseApiUrl(): string {
+    const NEXT_PUBLIC_BASE_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
+    if (!NEXT_PUBLIC_BASE_API_URL) {
+      throw new Error('No Google Places API key in environment variables!');
+    }
+    return NEXT_PUBLIC_BASE_API_URL;
+  }
 
   static googlePlacesApiKey(): string {
     const GOOGLE_PLACES_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;

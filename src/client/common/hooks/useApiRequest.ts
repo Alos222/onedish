@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 
+import { ConfigService } from 'src/server/services/config.service';
 import { ApiResponse } from 'src/types/response/api-response';
 
-const baseApiUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+const baseApiUrl = ConfigService.baseApiUrl();
 const defaultErrorMessage = 'Something went wrong when making API request';
 
 const handleError = (e: any) => {

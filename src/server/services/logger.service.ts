@@ -1,6 +1,8 @@
 import util from 'util';
 import * as winston from 'winston';
 
+import { ConfigService } from './config.service';
+
 interface LoggerMetadata extends Record<string, unknown> {
   error?: Error;
   errorMessage?: string;
@@ -10,7 +12,7 @@ export class LoggerService {
   private logger: winston.Logger;
 
   constructor(name: string) {
-    if (process.env.NODE_ENV === 'production') {
+    if (ConfigService.isProduction()) {
       this.logger = winston.createLogger({
         format: winston.format.combine(
           winston.format.label({ label: name }),
@@ -18,7 +20,7 @@ export class LoggerService {
           winston.format.metadata({
             fillExcept: ['level', 'message', 'label', 'timestamp'],
           }),
-          winston.format.json()
+          winston.format.json(),
         ),
         transports: [new winston.transports.Console()],
       });
@@ -35,7 +37,7 @@ export class LoggerService {
           winston.format.metadata({
             fillExcept: ['level', 'message', 'label', 'timestamp'],
           }),
-          format
+          format,
         ),
         level: 'debug',
         transports: [new winston.transports.Console()],
