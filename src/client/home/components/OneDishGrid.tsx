@@ -1,9 +1,10 @@
-import { Box, Button, CircularProgress, FormControl, Grid, Input, InputLabel, Typography } from '@mui/material';
-import { Vendor } from '@prisma/client';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useDebouncedCallback } from 'use-debounce';
+import { Box, Button, CircularProgress, FormControl, Grid, Input, InputLabel, Typography } from '@mui/material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { Vendor } from '@prisma/client';
 import OneDishCard from 'src/client/common/components/OneDishCard';
-import { useState } from 'react';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 
@@ -53,7 +54,7 @@ export default function OneDishGrid({ vendors: v }: OneDishGridProps) {
                 oneDish={oneDish}
                 vendor={vendor}
                 actions={
-                  <Button LinkComponent={Link} href={`/restaurant/${vendor.id}`}>
+                  <Button LinkComponent={Link} href={`/restaurant/${vendor.id}`} endIcon={<ArrowForwardIcon />}>
                     More Details
                   </Button>
                 }
