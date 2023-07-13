@@ -1,4 +1,5 @@
 import { JWT } from 'next-auth/jwt';
+
 import { ConfigService } from 'src/server/services/config.service';
 import { LoggerService } from 'src/server/services/logger.service';
 

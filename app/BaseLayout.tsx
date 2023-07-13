@@ -1,9 +1,10 @@
 'use client';
 
-import { ThemeProvider, Box } from '@mui/material';
+import { Box,ThemeProvider } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import { THEME } from 'app/theme';
 import { SnackbarProvider } from 'notistack';
+
+import { THEME } from 'app/theme';
 
 interface BaseLayoutProps {
   children: React.ReactNode;

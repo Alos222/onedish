@@ -1,8 +1,8 @@
-import { LoggerService } from 'src/server/services/logger.service';
+import { secureApiMiddleware } from 'src/server/middlewares/secureApiMiddleware';
 import { AwsService } from 'src/server/services/aws.service';
+import { LoggerService } from 'src/server/services/logger.service';
 import { UrlImageData } from 'src/types';
 import { ApiResponse } from 'src/types/response/api-response';
-import { secureApiMiddleware } from 'src/server/middlewares/secureApiMiddleware';
 
 const logger = new LoggerService('VendorPhotosUploadFromFileAPIRoute');
 const awsService = new AwsService();

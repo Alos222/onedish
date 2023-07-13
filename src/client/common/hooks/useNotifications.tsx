@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { useSnackbar, VariantType } from 'notistack';
 import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
+import { useSnackbar, VariantType } from 'notistack';
 
 export const useNotifications = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();

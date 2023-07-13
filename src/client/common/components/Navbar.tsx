@@ -1,11 +1,12 @@
-import Link from 'next/link';
-import { useTheme } from '@mui/material';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
+import { useTheme } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Link from 'next/link';
 import { User } from 'next-auth';
+
 import UserMenu from './UserMenu';
 
 interface NavbarProps {

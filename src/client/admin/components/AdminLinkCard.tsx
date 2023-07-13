@@ -1,6 +1,7 @@
-import Link from 'next/link';
-import { Button, Card, CardContent, Typography } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { Button, Card, CardContent, Typography } from '@mui/material';
+import Link from 'next/link';
+
 import { OneDishRoute } from 'app/routes';
 
 interface AdminLinkCardProps {

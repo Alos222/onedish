@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-import { Box, Button, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Box, Button, Typography } from '@mui/material';
+import Link from 'next/link';
 
 interface RestaurantNotFoundPageProps {}
 

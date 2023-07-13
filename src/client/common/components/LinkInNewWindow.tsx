@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import Link from 'next/link';
 
 export default function LinkInNewWindow({ href, text }: { href: string; text: string }) {
   return (

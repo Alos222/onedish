@@ -1,17 +1,19 @@
 import * as React from 'react';
-import Link from 'next/link';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CloseIcon from '@mui/icons-material/Close';
 import { Vendor } from '@prisma/client';
+import Link from 'next/link';
+
+import LoadingButton from 'src/client/common/components/LoadingButton';
+import SortTable, { HeadCell, Order } from 'src/client/common/components/SortTable';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { VendorPageData } from 'src/types/response/vendors/vendor-page.response';
-import SortTable, { HeadCell, Order } from 'src/client/common/components/SortTable';
+
 import ManageVendorDialog from './ManageVendorDialog';
-import LoadingButton from 'src/client/common/components/LoadingButton';
 
 const headCells: HeadCell<Vendor>[] = [
   {

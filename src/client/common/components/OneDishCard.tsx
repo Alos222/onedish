@@ -1,7 +1,8 @@
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Typography } from '@mui/material';
 import PhotoIcon from '@mui/icons-material/Photo';
-import ReadonlyText from './ReadonlyText';
+import { Box, Button, Card, CardActions, CardContent, CardMedia, Typography } from '@mui/material';
 import { OneDish, Vendor } from '@prisma/client';
+
+import ReadonlyText from './ReadonlyText';
 
 interface OneDishCardProps {
   oneDish: OneDish;

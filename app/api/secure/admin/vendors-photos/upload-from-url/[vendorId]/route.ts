@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { LoggerService } from 'src/server/services/logger.service';
+
+import { secureApiMiddleware } from 'src/server/middlewares/secureApiMiddleware';
 import { AwsService } from 'src/server/services/aws.service';
-import { ApiResponse } from 'src/types/response/api-response';
+import { LoggerService } from 'src/server/services/logger.service';
 import { SaveVendorPhotosFromUrlRequest } from 'src/types';
 import { UrlImageData } from 'src/types';
-import { secureApiMiddleware } from 'src/server/middlewares/secureApiMiddleware';
+import { ApiResponse } from 'src/types/response/api-response';
 import { SaveVendorPhotosFromUrlResponse } from 'src/types/response/vendors/save-vendor-photos-from-url.response';
 
 const logger = new LoggerService('VendorByIdAPIRoute');

@@ -1,6 +1,7 @@
 'use client';
 
 import { Vendor } from '@prisma/client';
+
 import VendorDetails from 'src/client/admin/vendors/components/VendorDetails';
 
 interface RestaurantPageProps {

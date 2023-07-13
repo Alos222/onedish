@@ -1,6 +1,7 @@
 'use client';
 
 import { SessionProvider, useSession } from 'next-auth/react';
+
 import AppWrapper from 'app/AppWrapper';
 import Navbar from 'src/client/common/components/Navbar';
 

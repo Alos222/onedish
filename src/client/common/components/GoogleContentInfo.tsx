@@ -1,7 +1,8 @@
 import { Box, ImageList, ImageListItem } from '@mui/material';
-import PlaceDetails from './PlaceDetails';
 import { VendorPlace } from '@prisma/client';
 import Image from 'next/image';
+
+import PlaceDetails from './PlaceDetails';
 
 interface GoogleContentInfoProps {
   place: VendorPlace;

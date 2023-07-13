@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { User } from 'next-auth';
-import { signOut } from 'next-auth/react';
-import Logout from '@mui/icons-material/Logout';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import Logout from '@mui/icons-material/Logout';
 import { Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
+import Link from 'next/link';
+import { User } from 'next-auth';
+import { signOut } from 'next-auth/react';
 
 interface UserMenuProps {
   user: User;

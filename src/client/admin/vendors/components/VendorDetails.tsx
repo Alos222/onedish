@@ -1,10 +1,13 @@
 import React from 'react';
 import { Card, CardContent, CardMedia, Grid, Paper, Typography } from '@mui/material';
 import { Vendor } from '@prisma/client';
-import GoogleMap from '../../../common/components/GoogleMap';
-import PlaceDetails from 'src/client/common/components/PlaceDetails';
-import ManageVendorDialog from './ManageVendorDialog';
+
 import OneDishCard from 'src/client/common/components/OneDishCard';
+import PlaceDetails from 'src/client/common/components/PlaceDetails';
+
+import GoogleMap from '../../../common/components/GoogleMap';
+
+import ManageVendorDialog from './ManageVendorDialog';
 
 interface VendorDetailsProps {
   vendor: Vendor;

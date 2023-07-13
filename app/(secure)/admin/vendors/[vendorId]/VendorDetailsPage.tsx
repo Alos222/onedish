@@ -1,8 +1,9 @@
 'use client';
 
-import { Vendor } from '@prisma/client';
-import { VendorDetailsRoute } from 'app/routes';
 import { useState } from 'react';
+import { Vendor } from '@prisma/client';
+
+import { VendorDetailsRoute } from 'app/routes';
 import VendorDetails from 'src/client/admin/vendors/components/VendorDetails';
 import PageContainer from 'src/client/common/components/PageContainer';
 

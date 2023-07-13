@@ -1,8 +1,10 @@
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { PrismaClient } from '@prisma/client';
 import { AuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
-import { PrismaClient } from '@prisma/client';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
+
 import { ConfigService } from 'src/server/services/config.service';
+
 import refreshAccessToken from './refreshAccessToken';
 
 const prisma = new PrismaClient();

@@ -1,11 +1,13 @@
 import { useCallback, useRef, useState } from 'react';
-import { Box, Autocomplete, TextField, CircularProgress } from '@mui/material';
 import { Loader } from '@googlemaps/js-api-loader';
+import { Autocomplete, Box, CircularProgress,TextField } from '@mui/material';
 import { VendorPlace } from '@prisma/client';
 import { useDebouncedCallback } from 'use-debounce';
+
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
-import { GooglePlacesKeys } from 'src/types';
 import { ConfigService } from 'src/server/services/config.service';
+import { GooglePlacesKeys } from 'src/types';
+
 import GoogleContentInfo from './GoogleContentInfo';
 
 type AutocompletePrediction = google.maps.places.AutocompletePrediction;

@@ -1,5 +1,5 @@
-import * as winston from 'winston';
 import util from 'util';
+import * as winston from 'winston';
 
 interface LoggerMetadata extends Record<string, unknown> {
   error?: Error;

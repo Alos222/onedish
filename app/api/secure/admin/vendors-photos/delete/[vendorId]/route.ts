@@ -1,8 +1,8 @@
-import { LoggerService } from 'src/server/services/logger.service';
-import { AwsService } from 'src/server/services/aws.service';
-import { ApiResponse } from 'src/types/response/api-response';
-import { DeleteVendorPhotosRequest } from 'src/types/request/vendors/delete-vendor-photos.request';
 import { secureApiMiddleware } from 'src/server/middlewares/secureApiMiddleware';
+import { AwsService } from 'src/server/services/aws.service';
+import { LoggerService } from 'src/server/services/logger.service';
+import { DeleteVendorPhotosRequest } from 'src/types/request/vendors/delete-vendor-photos.request';
+import { ApiResponse } from 'src/types/response/api-response';
 
 const logger = new LoggerService('VendorPhotosDeleteAPIRoute');
 const awsService = new AwsService();

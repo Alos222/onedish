@@ -1,12 +1,13 @@
-import Image from 'next/image';
-import { Typography, Box, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
-import PublicIcon from '@mui/icons-material/Public';
-import PinDropIcon from '@mui/icons-material/PinDrop';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import StarIcon from '@mui/icons-material/Star';
 import MapIcon from '@mui/icons-material/Map';
-import { Vendor, VendorPlace } from '@prisma/client';
+import PinDropIcon from '@mui/icons-material/PinDrop';
+import PublicIcon from '@mui/icons-material/Public';
+import StarIcon from '@mui/icons-material/Star';
+import { Box, List, ListItem, ListItemIcon,ListItemText, Typography } from '@mui/material';
 import { green, yellow } from '@mui/material/colors';
+import { Vendor, VendorPlace } from '@prisma/client';
+import Image from 'next/image';
+
 import LinkInNewWindow from './LinkInNewWindow';
 
 interface PlaceDetailsProps {

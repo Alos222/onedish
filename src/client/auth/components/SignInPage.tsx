@@ -1,10 +1,11 @@
 'use client';
 
+import { useState } from 'react';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import Image from 'next/image';
 import { signIn } from 'next-auth/react';
-import { Box, Button, CircularProgress, Typography } from '@mui/material';
+
 import { ConfigService } from 'src/server/services/config.service';
-import { useState } from 'react';
 
 export default function SignInPage() {
   const [loading, setLoading] = useState(false);

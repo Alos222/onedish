@@ -1,8 +1,10 @@
 import { Metadata } from 'next';
-import { ConfigService } from 'src/server/services/config.service';
-import VendorDetailsPage from './VendorDetailsPage';
-import { VendorService } from 'src/server/services/vendor.service';
+
 import { VendorDetailsRouteName } from 'app/route-names';
+import { ConfigService } from 'src/server/services/config.service';
+import { VendorService } from 'src/server/services/vendor.service';
+
+import VendorDetailsPage from './VendorDetailsPage';
 
 export const metadata: Metadata = {
   title: `${ConfigService.appName()} | ${VendorDetailsRouteName}`,

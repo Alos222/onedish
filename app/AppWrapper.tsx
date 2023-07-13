@@ -1,8 +1,9 @@
 'use client';
 
 import { Box, Divider, Paper } from '@mui/material';
-import AppBreadcrumbs from 'app/AppBreadcrumbs';
 import { User } from 'next-auth';
+
+import AppBreadcrumbs from 'app/AppBreadcrumbs';
 
 interface AppWrapperProps {
   user?: User;

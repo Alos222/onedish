@@ -1,6 +1,7 @@
 'use client';
 
 import { Vendor } from '@prisma/client';
+
 import OneDishGrid from 'src/client/home/components/OneDishGrid';
 
 interface HomePageProps {

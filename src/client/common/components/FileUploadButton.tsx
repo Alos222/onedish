@@ -1,6 +1,7 @@
 import React, { ChangeEvent, forwardRef, MutableRefObject } from 'react';
-import { Button } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import { Button } from '@mui/material';
+
 import { useNotifications } from '../hooks/useNotifications';
 
 const maxWidth = 800;

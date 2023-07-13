@@ -1,8 +1,10 @@
-import { getServerSession } from 'next-auth';
-import { LoggerService } from '../services/logger.service';
-import { ApiResponse } from 'src/types/response/api-response';
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+
 import { authOptions } from 'app/api/auth/[...nextauth]/authOptions';
+import { ApiResponse } from 'src/types/response/api-response';
+
+import { LoggerService } from '../services/logger.service';
 
 /**
  * Middleware for API requests that handles errors and ensures a user is authorized.

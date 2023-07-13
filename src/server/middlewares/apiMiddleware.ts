@@ -1,6 +1,8 @@
-import { LoggerService } from '../services/logger.service';
-import { ApiResponse } from 'src/types/response/api-response';
 import { NextResponse } from 'next/server';
+
+import { ApiResponse } from 'src/types/response/api-response';
+
+import { LoggerService } from '../services/logger.service';
 
 /**
  * Middleware for API requests that handles errors.
