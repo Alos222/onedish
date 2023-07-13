@@ -379,6 +379,9 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   const restrictedOneDishes = allOneDishes.slice(0, allowedOneDishes);
   const selectedOneDishesCount = restrictedOneDishes.length;
 
+  const placePhotos = (place?.photos || []).map((photo) => photo.url);
+  const hasPlacePhotos = !!placePhotos.length;
+
   return (
     <ODDialog
       buttonText={text}
@@ -494,14 +497,21 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
                 <Typography variant="body1" color="primary">
                   Restaurant Image
                 </Typography>
-                <PhotoListSelect
-                  photos={(place?.photos || []).map((photo) => photo.url)}
-                  selectedImage={vendorImageToUpload}
-                  label="Use for Restaurant"
-                  onPhotoSelected={(photo) => {
-                    setVendorImageToUpload(photo);
-                  }}
-                />
+                {hasPlacePhotos && (
+                  <PhotoListSelect
+                    photos={placePhotos}
+                    selectedImage={vendorImageToUpload}
+                    label="Use for Restaurant"
+                    onPhotoSelected={(photo) => {
+                      setVendorImageToUpload(photo);
+                    }}
+                  />
+                )}
+                {!hasPlacePhotos && (
+                  <Typography variant="body1" color="secondary">
+                    Select a restaurant from the map to preview some images
+                  </Typography>
+                )}
               </>
             )}
           </Grid>
