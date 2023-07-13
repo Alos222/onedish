@@ -73,24 +73,23 @@ export class VendorService implements IVendorService {
     skip: number,
     take: number,
   ) {
+    let where = {};
+    if (column !== 'created' && column !== 'updated') {
+      where = {
+        [column]: {
+          mode: 'insensitive',
+          contains: searchQuery,
+        },
+      };
+    }
     const results = await this.prisma.$transaction([
       this.prisma.vendor.count({
-        where: {
-          [column]: {
-            mode: 'insensitive',
-            contains: searchQuery,
-          },
-        },
+        where,
       }),
       this.prisma.vendor.findMany({
         skip,
         take,
-        where: {
-          [column]: {
-            mode: 'insensitive',
-            contains: searchQuery,
-          },
-        },
+        where,
         orderBy: {
           [column]: sortType ?? 'asc',
         },

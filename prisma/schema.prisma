@@ -60,6 +60,8 @@ model Vendor {
   place       VendorPlace?
   tier        String?
   oneDishes   OneDish[]
+  created     DateTime
+  updated     DateTime
 
   @@map("vendors")
 }

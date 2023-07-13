@@ -119,6 +119,8 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
           tier: selectedTier,
           vendorImage: null,
           oneDishes: [],
+          created: new Date(),
+          updated: new Date(),
         };
         // Need to create the vendor first, so we can associate images with the vendor id
         const createResponse = await post<AddVendorRequest, string>({ vendor: createVendorData });
@@ -299,6 +301,8 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         return;
       }
 
+      // TODO Need to figure out how to only pass some props
+      // For example, I don't need the `created` value when updating
       const vendorData: VendorWithoutId = {
         place,
         name: placeName,
@@ -306,6 +310,8 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         tier: selectedTier,
         vendorImage: vendorImageData?.url || null,
         oneDishes,
+        created: vendor?.created || new Date(),
+        updated: new Date(),
       };
 
       let response: ApiResponse<string> = await patch<AddVendorRequest, string>(`/${vendorId}`, {

@@ -40,6 +40,20 @@ const headCells: HeadCell<Vendor>[] = [
     disablePadding: false,
   },
   {
+    typeId: 'created',
+    label: 'Created',
+    numeric: false,
+    disablePadding: false,
+    sortable: true,
+  },
+  {
+    typeId: 'updated',
+    label: 'Updated',
+    numeric: false,
+    disablePadding: false,
+    sortable: true,
+  },
+  {
     id: 'delete',
     label: '',
     numeric: false,
@@ -119,6 +133,8 @@ export default function VendorsTable() {
               <TableCell>{item.address}</TableCell>
               <TableCell>{capitalizeFirstLetter(item.tier || '')}</TableCell>
               <TableCell>{item.oneDishes.length}</TableCell>
+              <TableCell>{new Date(item.created).toLocaleString()}</TableCell>
+              <TableCell>{new Date(item.updated).toLocaleString()}</TableCell>
               <TableCell>
                 <IconButton aria-label="delete" onClick={() => setVendorToDelete(item)} color="error">
                   <DeleteIcon />

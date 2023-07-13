@@ -156,11 +156,6 @@ export default function SortTable<T>({
         )}
       </Box>
       <Paper sx={{ width: '100%', my: 2 }}>
-        {loading && (
-          <Box display="flex" justifyContent="center" py={5}>
-            <CircularProgress />
-          </Box>
-        )}
         {!loading && data.length === 0 && (
           <Box display="flex" justifyContent="center" py={5}>
             <Typography variant="body1" color="secondary">
@@ -168,7 +163,7 @@ export default function SortTable<T>({
             </Typography>
           </Box>
         )}
-        {!loading && !!data.length && (
+        {!!data.length && (
           <TableContainer>
             <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={'medium'}>
               <EnhancedTableHead
@@ -177,18 +172,25 @@ export default function SortTable<T>({
                 orderBy={orderBy}
                 onRequestSort={handleRequestSort}
               />
-              <TableBody>
-                {data.map((row, index) => children(row))}
-                {emptyRows > 0 && (
-                  <TableRow
-                    style={{
-                      height: 53 * emptyRows,
-                    }}
-                  >
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
-              </TableBody>
+              {loading && (
+                <Box display="flex" justifyContent="center" py={3}>
+                  <CircularProgress />
+                </Box>
+              )}
+              {!loading && (
+                <TableBody>
+                  {data.map((row, index) => children(row))}
+                  {emptyRows > 0 && (
+                    <TableRow
+                      style={{
+                        height: 53 * emptyRows,
+                      }}
+                    >
+                      <TableCell colSpan={6} />
+                    </TableRow>
+                  )}
+                </TableBody>
+              )}
             </Table>
           </TableContainer>
         )}

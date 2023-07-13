@@ -22,6 +22,15 @@ export type VendorTier = 'first' | 'second' | 'third';
 
 // Vendor data without the id, to be used in POST requests
 const vendorData = Prisma.validator<Prisma.VendorArgs>()({
-  select: { address: true, name: true, place: true, oneDishes: true, tier: true, vendorImage: true },
+  select: {
+    address: true,
+    name: true,
+    place: true,
+    oneDishes: true,
+    tier: true,
+    vendorImage: true,
+    created: true,
+    updated: true,
+  },
 });
 export type VendorWithoutId = Prisma.VendorGetPayload<typeof vendorData>;
