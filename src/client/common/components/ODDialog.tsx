@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 interface ODDialogProps {
   buttonText: string;
   title: string;
+  openState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
   onOpen?: () => void;
   onClose?: () => void;
   Actions?: React.ReactNode;
@@ -13,12 +13,13 @@ interface ODDialogProps {
 export default function ODDialog({
   buttonText,
   title,
+  openState,
   onOpen,
   onClose,
   Actions,
   children,
 }: React.PropsWithChildren<ODDialogProps>) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = openState;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -51,7 +52,13 @@ export default function ODDialog({
           </IconButton>
         </DialogTitle>
         <DialogContent sx={{ mt: 2 }}>{children}</DialogContent>
-        {Actions && <DialogActions>{Actions}</DialogActions>}
+
+        <DialogActions>
+          <>
+            <Button onClick={handleClose}>Close</Button>
+            {Actions && Actions}
+          </>
+        </DialogActions>
       </Dialog>
     </>
   );

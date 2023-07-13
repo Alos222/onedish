@@ -67,6 +67,10 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   // Temp dat for files that we need to delete
   const [oneDishesToDelete, setOneDishesToDelete] = useState<OneDishTempData[]>([]);
 
+  // Dialog
+  const openState = useState(false);
+  const [, setOpen] = openState;
+
   /**
    * Function to reset the form
    */
@@ -78,6 +82,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
 
   const handleClose = () => {
     clearData();
+    setOpen(false);
   };
 
   const handleSave = async () => {
@@ -338,14 +343,12 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
     <ODDialog
       buttonText={text}
       title={text}
+      openState={openState}
       onClose={() => clearData()}
       Actions={
-        <>
-          <Button onClick={handleClose}>Cancel</Button>
-          <LoadingButton loading={isLoading} onClick={handleSave}>
-            Save
-          </LoadingButton>
-        </>
+        <LoadingButton loading={isLoading} onClick={handleSave}>
+          Save
+        </LoadingButton>
       }
     >
       <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
