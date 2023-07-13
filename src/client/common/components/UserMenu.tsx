@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+import Link from 'next/link';
 import { User } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import Logout from '@mui/icons-material/Logout';
@@ -11,16 +13,13 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
-import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
-import Link from 'next/link';
 
 interface UserMenuProps {
   user: User;
 }
 
 export default function UserMenu({ user }: UserMenuProps) {
-  const pathname = usePathname();
+  // const pathname = usePathname();
   // const { displayError } = useNotifications();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -53,7 +52,13 @@ export default function UserMenu({ user }: UserMenuProps) {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            {user.image && <Avatar alt={user.name || 'Logged in user'} src={user.image} />}
+            {user.image && (
+              <Avatar
+                alt={user.name || 'Logged in user'}
+                src={user.image}
+                imgProps={{ referrerPolicy: 'no-referrer' }}
+              />
+            )}
             {!user.image && <AccountCircleIcon />}
           </IconButton>
         </Tooltip>
