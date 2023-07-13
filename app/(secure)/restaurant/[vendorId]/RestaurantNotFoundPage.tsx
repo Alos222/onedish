@@ -1,9 +1,8 @@
 'use client';
 
-import { Box, Button, Typography } from '@mui/material';
-import { Vendor } from '@prisma/client';
 import Link from 'next/link';
-import VendorDetails from 'src/client/admin/vendors/components/VendorDetails';
+import { Box, Button, Typography } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface RestaurantNotFoundPageProps {}
 
@@ -14,10 +13,10 @@ export default function RestaurantNotFoundPage({}: RestaurantNotFoundPageProps) 
   return (
     <Box height={300} display="flex" justifyContent="center" pl={2} flexDirection="column">
       <Typography variant="h4" color="primary" mb={2}>
-        Sorry, we couldn't find that restaurant
+        Sorry, we couldn&apos;t find that restaurant
       </Typography>
       <Box>
-        <Button LinkComponent={Link} href="/">
+        <Button LinkComponent={Link} href="/" startIcon={<ArrowBackIcon />}>
           Go back home
         </Button>
       </Box>
