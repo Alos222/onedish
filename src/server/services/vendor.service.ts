@@ -102,4 +102,36 @@ export class VendorService implements IVendorService {
       data: results[1],
     };
   }
+
+  async searchVendors(search: string | null): Promise<Vendor[]> {
+    if (!search) {
+      return [];
+    }
+
+    const results = await this.prisma.vendor.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            oneDishes: {
+              some: {
+                title: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    console.log({ results, search });
+    return results;
+  }
 }

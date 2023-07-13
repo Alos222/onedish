@@ -1,19 +1,18 @@
-import { authOptions } from 'app/api/auth/[...nextauth]/route';
-import { getServerSession } from 'next-auth';
 import { LoggerService } from '../services/logger.service';
 import { ApiResponse } from 'src/types/response/api-response';
 import { NextResponse } from 'next/server';
 
 /**
- * Middleware for API requests that handles errors and ensures a user is authorized.
+ * Middleware for API requests that handles errors.
  *
- * TODO Add roles and check them here
+ * // TODO Use this in the secureApiMiddleware
+ *
  * @param logger A logger
  * @param req The request data
  * @param next The API function
  * @returns
  */
-export const secureApiMiddleware = async <T>(
+export const apiMiddleware = async <T>(
   logger: LoggerService,
   req: Request,
   next: () => Promise<ApiResponse<T>>,
@@ -21,18 +20,6 @@ export const secureApiMiddleware = async <T>(
   const url = req.url;
 
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.accessToken) {
-      logger.warn('Unauthorized access attempted at secure API', { session, url });
-      return NextResponse.json(
-        {
-          error: 'Unauthorized access',
-        },
-        { status: 401 },
-      );
-    }
-
     const response = await next();
     if (response.error) {
       // Assume something went wrong in the next() function, so return as error

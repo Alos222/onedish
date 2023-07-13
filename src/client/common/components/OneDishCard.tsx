@@ -15,7 +15,7 @@ export default function OneDishCard({ oneDish, vendor, onDelete, actions }: OneD
   const { name } = vendor || {};
 
   return (
-    <Card sx={{ maxWidth: 350, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+    <Card sx={{ maxWidth: 400, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
       {url && <CardMedia sx={{ height: 300 }} image={url} title="oneDish" />}
       {!url && (
         <Box display="flex" alignContent="center" justifyContent="center" p={4}>
