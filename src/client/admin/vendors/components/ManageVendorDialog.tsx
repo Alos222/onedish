@@ -486,7 +486,18 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
                   description: oneDish.description,
                 }}
                 actions={
-                  <Button onClick={() => setOneDishesToDelete((prev) => [...prev, oneDish])} color="error">
+                  <Button
+                    onClick={() => {
+                      // First check if this is a new file upload
+                      // If so, we don't have to delete anything, just remove it from the in-memory list
+                      if (oneDishFileUploads.some((o) => o.id === oneDish.id)) {
+                        setOneDishFileUploads((prev) => prev.filter((o) => o.id !== oneDish.id));
+                        return;
+                      }
+                      setOneDishesToDelete((prev) => [...prev, oneDish]);
+                    }}
+                    color="error"
+                  >
                     Delete
                   </Button>
                 }
