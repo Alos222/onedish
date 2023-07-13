@@ -1,6 +1,7 @@
-import { Button, Card, CardContent, Grid, Typography } from '@mui/material';
-import { OneDishRoute } from 'app/routes';
 import Link from 'next/link';
+import { Button, Card, CardContent, Typography } from '@mui/material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { OneDishRoute } from 'app/routes';
 
 interface AdminLinkCardProps {
   route: OneDishRoute;
@@ -18,7 +19,7 @@ export default function AdminLinkCard({ route }: AdminLinkCardProps) {
           {route.description}
         </Typography>
 
-        <Button LinkComponent={Link} href={route.href} variant="outlined">
+        <Button LinkComponent={Link} href={route.href} variant="outlined" endIcon={<ArrowForwardIcon />}>
           Go to page
         </Button>
       </CardContent>
