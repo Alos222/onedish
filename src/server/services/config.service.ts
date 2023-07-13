@@ -39,19 +39,19 @@ export class ConfigService {
   }
 
   static awsS3BucketName(): string {
-    const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
-    if (!AWS_S3_BUCKET_NAME) {
+    const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
+    if (!S3_BUCKET_NAME) {
       throw new Error('No AWS S3 bucket name in environment variables!');
     }
-    return AWS_S3_BUCKET_NAME;
+    return S3_BUCKET_NAME;
   }
 
   static awsS3Region(): string {
-    const AWS_S3_REGION = process.env.AWS_S3_REGION;
-    if (!AWS_S3_REGION) {
+    const S3_REGION = process.env.S3_REGION;
+    if (!S3_REGION) {
       throw new Error('No AWS S3 region in environment variables!');
     }
-    return AWS_S3_REGION;
+    return S3_REGION;
   }
 
   static nextAuthSecret(): string {
