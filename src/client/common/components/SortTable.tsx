@@ -42,12 +42,6 @@ function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
     onRequestSort(event, property);
   };
 
-  console.log({
-    orderBy,
-    order,
-    typeId: headCells[0].typeId,
-  });
-
   return (
     <TableHead>
       <TableRow>

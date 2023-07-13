@@ -3,6 +3,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 interface ODDialogProps {
   buttonText: string;
+  ButtonStartIcon?: React.ReactNode;
   title: string;
   openState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
   onOpen?: () => void;
@@ -12,6 +13,7 @@ interface ODDialogProps {
 
 export default function ODDialog({
   buttonText,
+  ButtonStartIcon,
   title,
   openState,
   onOpen,
@@ -32,7 +34,7 @@ export default function ODDialog({
 
   return (
     <>
-      <Button variant="outlined" onClick={handleClickOpen}>
+      <Button variant="outlined" onClick={handleClickOpen} startIcon={ButtonStartIcon ? ButtonStartIcon : null}>
         {buttonText}
       </Button>
       <Dialog open={open} fullWidth maxWidth="xl">

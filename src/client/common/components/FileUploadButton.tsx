@@ -1,5 +1,6 @@
 import React, { ChangeEvent, forwardRef, MutableRefObject } from 'react';
 import { Button } from '@mui/material';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { useNotifications } from '../hooks/useNotifications';
 
 const maxWidth = 800;
@@ -114,7 +115,7 @@ const FileUploadButton = forwardRef<HTMLInputElement, FileUploadButtonProps>(
     };
 
     return (
-      <Button component="label" variant="outlined" sx={{ mt: 2 }}>
+      <Button component="label" variant="outlined" sx={{ mt: 2 }} startIcon={<FileUploadIcon />}>
         Upload File
         <input type="file" hidden ref={inputRef} onChange={handleFileUpload} />
       </Button>

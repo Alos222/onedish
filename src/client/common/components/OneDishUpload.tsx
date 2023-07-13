@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Box, Button, CardActions, CardContent, CardMedia, Grid } from '@mui/material';
 import PhotoIcon from '@mui/icons-material/Photo';
+import AddIcon from '@mui/icons-material/Add';
 import { Vendor, VendorPlace } from '@prisma/client';
 import { OneDishTempData } from 'src/types';
 import { useNotifications } from '../hooks/useNotifications';
@@ -101,7 +102,7 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
           />
         </CardContent>
         <CardActions>
-          <Button onClick={confirmOneDish} variant="contained">
+          <Button onClick={confirmOneDish} variant="outlined" startIcon={<AddIcon />}>
             Add OneDish
           </Button>
         </CardActions>

@@ -20,7 +20,14 @@ export default function VendorDetails({ vendor, onVendorUpdated }: VendorDetails
         <Card sx={{ mb: 2 }}>
           <CardContent>
             <PlaceDetails vendor={vendor} place={vendor.place} />
-            {onVendorUpdated && <ManageVendorDialog vendor={vendor} onVendor={(vendor) => onVendorUpdated(vendor)} />}
+            {onVendorUpdated && (
+              <ManageVendorDialog
+                vendor={vendor}
+                onVendor={(vendor) => {
+                  onVendorUpdated(vendor);
+                }}
+              />
+            )}
           </CardContent>
           {vendorImage && <CardMedia sx={{ height: 200 }} image={vendorImage} title="Vendor image" />}
         </Card>
@@ -37,7 +44,7 @@ export default function VendorDetails({ vendor, onVendorUpdated }: VendorDetails
 
           <Grid container mt={2} spacing={2} justifyContent="center">
             {oneDishes.map((oneDish) => (
-              <Grid item md={12} lg={6} xl={4} key={oneDish.id}>
+              <Grid item md={12} lg={6} xl={4} key={oneDish.id} display="flex" justifyContent="center">
                 <OneDishCard key={oneDish.id} oneDish={oneDish} vendor={vendor} />
               </Grid>
             ))}

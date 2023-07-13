@@ -24,7 +24,6 @@ export default function OneDishGrid({ vendors: v }: OneDishGridProps) {
       return;
     }
     const response = await get<Vendor[]>(`?search=${value}`);
-    console.log(response);
     if (response.error) {
       displayError(response.error);
       return;

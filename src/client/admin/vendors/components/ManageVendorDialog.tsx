@@ -1,6 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import Button from '@mui/material/Button';
-import { Divider, Grid, Paper, Typography } from '@mui/material';
+import { Card, CardActions, CardContent, CardMedia, Divider, Grid, Paper, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 import type { OneDish, Vendor, VendorPlace } from '@prisma/client';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
@@ -57,7 +62,6 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   const [placeName, setPlaceName] = useState<string | null>(vendor?.name || '');
   const [placeAddress, setPlaceAddress] = useState<string | null>(vendor?.address || '');
   const [place, setPlace] = useState<VendorPlace | null>(vendor?.place || null);
-  const [vendorImage, setVendorImage] = useState<string | null>(vendor?.vendorImage || null);
   // TODO Check this casting...
   const [selectedTier, setSelectedTier] = useState<VendorTier | null>((vendor?.tier as VendorTier) || null);
 
@@ -65,6 +69,8 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   const [oneDishFileUploads, setOneDishFileUploads] = useState<OneDishTempData[]>([]);
   // Temp dat for files that we need to delete
   const [oneDishesToDelete, setOneDishesToDelete] = useState<OneDishTempData[]>([]);
+  const [vendorImageToUpload, setVendorImageToUpload] = useState<string | null>(vendor?.vendorImage || null);
+  const [vendorImageToDelete, setVendorImageToDelete] = useState<string | null>();
 
   // Dialog
   const openState = useState(false);
@@ -73,14 +79,16 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   /**
    * Function to reset the form
    */
-  const clearData = () => {
+  const clearData = (newVendor?: Vendor) => {
     setOneDishFileUploads([]);
     setOneDishesToDelete([]);
-    setPlace(null);
+    setVendorImageToUpload(newVendor?.vendorImage || null);
+    setVendorImageToDelete(undefined);
+    setPlace(newVendor?.place || null);
   };
 
-  const handleClose = () => {
-    clearData();
+  const handleClose = (newVendor?: Vendor) => {
+    clearData(newVendor);
     setOpen(false);
   };
 
@@ -195,7 +203,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
       // instead of modifying variables...
       let vendorImageData: UrlImageData | undefined;
       const uploadPhotoUrls = async (vendorId: string) => {
-        if (!oneDishFileUploads.length && !vendorImage) {
+        if (!oneDishFileUploads.length && !vendorImageToUpload) {
           return;
         }
         const imageData: ImageDataRequest[] = [];
@@ -211,11 +219,12 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         });
 
         let vendorImageDataRequest: ImageDataRequest | undefined;
-        if (vendorImage) {
+        if (vendorImageToUpload) {
           vendorImageDataRequest = {
-            id: vendorId,
-            url: vendorImage,
+            id: `${vendorId}-${uuidv4()}`,
+            url: vendorImageToUpload,
           };
+          hasUploads = true;
         }
 
         if (hasUploads) {
@@ -262,7 +271,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
 
       // Then check if we have any files to delete
       const deletePhotos = async () => {
-        if (!oneDishesToDelete.length) {
+        if (!oneDishesToDelete.length && !vendorImageToDelete) {
           return;
         }
         const imageUrlsToDelete: string[] = [];
@@ -273,6 +282,11 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
             imageUrlsToDelete.push(oneDishTempData.url);
           }
         });
+
+        if (vendorImageToDelete) {
+          // Also delete the vendor image
+          imageUrlsToDelete.push(vendorImageToDelete);
+        }
 
         if (imageUrlsToDelete.length) {
           const result = await deleteWithData<DeleteVendorPhotosRequest, boolean>(`/${vendorId}`, {
@@ -290,7 +304,9 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
           }
 
           // Remove those deleted images from the data that we are saving
-          oneDishes = oneDishes.filter((o) => oneDishesToDelete.some((toDelete) => o.id !== toDelete.id));
+          if (oneDishesToDelete.length) {
+            oneDishes = oneDishes.filter((o) => oneDishesToDelete.some((toDelete) => o.id !== toDelete.id));
+          }
         }
       };
 
@@ -321,10 +337,11 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         displayError(response.error);
       } else if (response.data) {
         clearData();
-        onVendor({ ...vendorData, id: vendorId });
+        const newVendor = { ...vendorData, id: vendorId };
+        onVendor(newVendor);
 
         displayInfo(`The vendor ${vendorData.name} at ${vendorData.address} was saved!`);
-        handleClose();
+        handleClose(newVendor);
       } else {
         displayError('Could not update vendor...');
       }
@@ -365,11 +382,12 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   return (
     <ODDialog
       buttonText={text}
+      ButtonStartIcon={isEditing ? <EditIcon /> : <AddIcon />}
       title={text}
       openState={openState}
-      onClose={() => clearData()}
+      onClose={() => clearData(vendor)}
       Actions={
-        <LoadingButton loading={isLoading} onClick={handleSave}>
+        <LoadingButton loading={isLoading} onClick={handleSave} variant="outlined" startIcon={<SaveIcon />}>
           Save
         </LoadingButton>
       }
@@ -445,17 +463,47 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
             />
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="body1" color="primary">
-              Restaurant Image
-            </Typography>
-            <PhotoListSelect
-              photos={(place?.photos || []).map((photo) => photo.url)}
-              selectedImage={vendorImage}
-              label="Use for Restaurant"
-              onPhotoSelected={(photo) => {
-                setVendorImage(photo);
-              }}
-            />
+            {vendorImageToUpload && (
+              <Card sx={{ maxWidth: 500 }}>
+                <CardMedia sx={{ height: 300 }} image={vendorImageToUpload} title="Vendor image" />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div" color="primary">
+                    Restaurant Image
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    onClick={() => {
+                      if (vendor?.vendorImage) {
+                        // There is already a saved vendor image, so we need to delete that from S3
+                        setVendorImageToDelete(vendor.vendorImage);
+                      }
+                      setVendorImageToUpload(null);
+                    }}
+                    color="error"
+                    variant="outlined"
+                    startIcon={<DeleteIcon />}
+                  >
+                    Delete
+                  </Button>
+                </CardActions>
+              </Card>
+            )}
+            {!vendorImageToUpload && (
+              <>
+                <Typography variant="body1" color="primary">
+                  Restaurant Image
+                </Typography>
+                <PhotoListSelect
+                  photos={(place?.photos || []).map((photo) => photo.url)}
+                  selectedImage={vendorImageToUpload}
+                  label="Use for Restaurant"
+                  onPhotoSelected={(photo) => {
+                    setVendorImageToUpload(photo);
+                  }}
+                />
+              </>
+            )}
           </Grid>
         </Grid>
       </Paper>
@@ -493,6 +541,8 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
                 }}
                 actions={
                   <Button
+                    variant="outlined"
+                    startIcon={<DeleteIcon />}
                     onClick={() => {
                       // First check if this is a new file upload
                       // If so, we don't have to delete anything, just remove it from the in-memory list

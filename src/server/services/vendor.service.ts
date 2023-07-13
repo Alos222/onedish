@@ -130,7 +130,6 @@ export class VendorService implements IVendorService {
       },
     });
 
-    console.log({ results, search });
     return results;
   }
 }
