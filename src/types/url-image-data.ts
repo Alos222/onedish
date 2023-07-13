@@ -1,7 +1,7 @@
 /**
  * Data for a photo saved into S3
  */
-export interface ImageData {
+export interface UrlImageData {
   /**
    * An id created by us used to associate a file saved to S3 with some object created by us
    */

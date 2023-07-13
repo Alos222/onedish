@@ -56,7 +56,7 @@ model Vendor {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   address     String
   name        String
-  vendorImage VendorPhoto?
+  vendorImage String?
   place       VendorPlace?
   tier        String?
   oneDishes   OneDish[]

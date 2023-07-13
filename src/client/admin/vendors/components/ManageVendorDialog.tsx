@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { Divider, Grid, Paper, Typography } from '@mui/material';
-import type { OneDish, Vendor, VendorPhoto, VendorPlace } from '@prisma/client';
+import type { OneDish, Vendor, VendorPlace } from '@prisma/client';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { useApiRequest } from 'src/client/common/hooks/useApiRequest';
 import {
   ImageDataRequest,
   OneDishTempData,
   SaveVendorPhotosFromUrlRequest,
+  SaveVendorPhotosFromUrlResponse,
   VendorTier,
   VendorWithoutId,
 } from 'src/types';
@@ -17,9 +18,7 @@ import ODTextField from 'src/client/common/components/ODTextField';
 import OneDishCard from 'src/client/common/components/OneDishCard';
 import OneDishTier from 'src/client/common/components/OneDishTier';
 import PhotoListSelect from 'src/client/common/components/PhotoListSelect';
-import { ApiResponse } from 'src/types/response/api-response';
-import { AddVendorRequest } from 'src/types/request/vendors/add-vendor.request';
-import { ImageData } from 'src/types/image-data';
+import { ApiResponse, AddVendorRequest, UrlImageData } from 'src/types';
 import LoadingButton from 'src/client/common/components/LoadingButton';
 import { DeleteVendorPhotosRequest } from 'src/types/request/vendors/delete-vendor-photos.request';
 import ODDialog from 'src/client/common/components/ODDialog';
@@ -42,10 +41,10 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   const isEditing = !!vendor;
   const { post, patch, loading: loadingSave } = useApiRequest('secure/admin/vendors');
   const { postFile: uploadFromFile, loading: loadingUploadFromFile } = useApiRequest(
-    'secure/admin/vendors-photos/upload-from-file'
+    'secure/admin/vendors-photos/upload-from-file',
   );
   const { postWithUrl: uploadFromUrl, loading: loadingUploadFromUrl } = useApiRequest(
-    'secure/admin/vendors-photos/upload-from-url'
+    'secure/admin/vendors-photos/upload-from-url',
   );
   const { deleteWithData, loading: loadingDelete } = useApiRequest('secure/admin/vendors-photos/delete');
 
@@ -58,7 +57,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
   const [placeName, setPlaceName] = useState<string | null>(vendor?.name || '');
   const [placeAddress, setPlaceAddress] = useState<string | null>(vendor?.address || '');
   const [place, setPlace] = useState<VendorPlace | null>(vendor?.place || null);
-  const [vendorImage, setVendorImage] = useState<VendorPhoto | null>(vendor?.vendorImage || null);
+  const [vendorImage, setVendorImage] = useState<string | null>(vendor?.vendorImage || null);
   // TODO Check this casting...
   const [selectedTier, setSelectedTier] = useState<VendorTier | null>((vendor?.tier as VendorTier) || null);
 
@@ -111,14 +110,14 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
     }
 
     try {
-      let vendorId = vendor?.id;
+      let vendorId: string | undefined = vendor?.id;
       if (!vendor) {
         const createVendorData: VendorWithoutId = {
           place,
           name: placeName,
           address: placeAddress,
           tier: selectedTier,
-          vendorImage,
+          vendorImage: null,
           oneDishes: [],
         };
         // Need to create the vendor first, so we can associate images with the vendor id
@@ -149,14 +148,14 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
             formData.append(
               oneDishTempData.id,
               oneDishTempData.fileBlob,
-              oneDishTempData.fileName || oneDishTempData.id
+              oneDishTempData.fileName || oneDishTempData.id,
             );
             hasUploads = true;
           }
         });
 
         if (hasUploads) {
-          const result = await uploadFromFile<ImageData[]>(`${vendorId}`, formData);
+          const result = await uploadFromFile<UrlImageData[]>(`${vendorId}`, formData);
           if (result.error) {
             displayError(result.error);
             isError = true;
@@ -189,8 +188,12 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         }
       };
 
-      const uploadPhotoUrls = async () => {
-        if (!oneDishFileUploads.length) {
+      // TODO I don't know if this is really safe...
+      // Should move this function out of this file, and have it return the image data
+      // instead of modifying variables...
+      let vendorImageData: UrlImageData | undefined;
+      const uploadPhotoUrls = async (vendorId: string) => {
+        if (!oneDishFileUploads.length && !vendorImage) {
           return;
         }
         const imageData: ImageDataRequest[] = [];
@@ -205,23 +208,37 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
           }
         });
 
+        let vendorImageDataRequest: ImageDataRequest | undefined;
+        if (vendorImage) {
+          vendorImageDataRequest = {
+            id: vendorId,
+            url: vendorImage,
+          };
+        }
+
         if (hasUploads) {
-          const result = await uploadFromUrl<SaveVendorPhotosFromUrlRequest, ImageData[]>(`/${vendorId}`, {
-            imageData,
-          });
+          const result = await uploadFromUrl<SaveVendorPhotosFromUrlRequest, SaveVendorPhotosFromUrlResponse>(
+            `/${vendorId}`,
+            {
+              imageData,
+              vendorImageData: vendorImageDataRequest,
+            },
+          );
           if (result.error) {
             displayError(result.error);
             isError = true;
             return;
           }
-          if (!result.data || !result.data.length) {
+          if (!result.data) {
             displayError('Could not upload photos');
             isError = true;
             return;
           }
+          const { imageData: responseImageData, vendorImageData: responseVendorImageData } = result.data;
+          vendorImageData = responseVendorImageData;
 
           // Associate the saved files with a OneDish
-          result.data.forEach(({ id, url }) => {
+          responseImageData.forEach(({ id, url }) => {
             const oneDishTempData = oneDishFileUploads.find((o) => o.id === id);
             if (!oneDishTempData) {
               console.error('Could not find OneDish data for a saved image', {
@@ -277,7 +294,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
 
       // TODO I have a bad feeling about doing it this way...
       // Should probably move these request functions and error checking into seperate files/functions out of this hook
-      await Promise.all([uploadPhotos(), uploadPhotoUrls(), deletePhotos()]);
+      await Promise.all([uploadPhotos(), uploadPhotoUrls(vendorId), deletePhotos()]);
       if (isError) {
         return;
       }
@@ -287,7 +304,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
         name: placeName,
         address: placeAddress,
         tier: selectedTier,
-        vendorImage,
+        vendorImage: vendorImageData?.url || null,
         oneDishes,
       };
 
@@ -426,7 +443,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
               Restaurant Image
             </Typography>
             <PhotoListSelect
-              photos={place?.photos || []}
+              photos={(place?.photos || []).map((photo) => photo.url)}
               selectedImage={vendorImage}
               label="Use for Restaurant"
               onPhotoSelected={(photo) => {

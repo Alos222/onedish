@@ -4,4 +4,5 @@ export interface ImageDataRequest {
 }
 export interface SaveVendorPhotosFromUrlRequest {
   imageData: ImageDataRequest[];
+  vendorImageData?: ImageDataRequest;
 }

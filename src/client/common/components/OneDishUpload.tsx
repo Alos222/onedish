@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Box, Button, CardActions, CardContent, CardMedia, Grid } from '@mui/material';
 import PhotoIcon from '@mui/icons-material/Photo';
 import ODTextField from './ODTextField';
-import { Vendor, VendorPhoto, VendorPlace } from '@prisma/client';
+import { Vendor, VendorPlace } from '@prisma/client';
 import { useNotifications } from '../hooks/useNotifications';
 import PhotoListSelect from './PhotoListSelect';
 import { OneDishTempData } from 'src/types';
@@ -23,7 +23,7 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
   const [fileBlob, setFileBlob] = useState<Blob | undefined>();
   const [fileName, setFileName] = useState<string | undefined>();
   const [fileString, setFileString] = useState<string | undefined>();
-  const [selectedImage, setSelectedImage] = useState<VendorPhoto | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [url, setUrl] = useState<string | undefined>();
   const [id, setId] = useState(uuidv4());
 
@@ -107,12 +107,12 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
 
       <Grid item xs={12} sm={7} sx={{ overflowY: 'auto' }}>
         <PhotoListSelect
-          photos={vendor?.place?.photos || place?.photos || []}
+          photos={(vendor?.place?.photos || place?.photos || []).map((photo) => photo.url)}
           selectedImage={selectedImage}
           label="Use for OneDish"
           onPhotoSelected={(photo) => {
             setSelectedImage(photo);
-            setUrl(photo?.url);
+            setUrl(photo || undefined);
 
             // Clear out any file uploads
             setFileString(undefined);

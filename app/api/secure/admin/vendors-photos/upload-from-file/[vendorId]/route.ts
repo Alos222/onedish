@@ -1,6 +1,6 @@
 import { LoggerService } from 'src/server/services/logger.service';
 import { AwsService } from 'src/server/services/aws.service';
-import { ImageData } from 'src/types';
+import { UrlImageData } from 'src/types';
 import { ApiResponse } from 'src/types/response/api-response';
 import { secureApiMiddleware } from 'src/server/middlewares/secureApiMiddleware';
 
@@ -26,9 +26,9 @@ export async function POST(request: Request, { params }: { params: { vendorId: s
           url,
         };
       });
-      const s3FileUrls: ImageData[] = await Promise.all(promises);
+      const s3FileUrls: UrlImageData[] = await Promise.all(promises);
 
-      const response: ApiResponse<ImageData[]> = {
+      const response: ApiResponse<UrlImageData[]> = {
         data: s3FileUrls,
       };
 
