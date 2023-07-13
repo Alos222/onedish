@@ -122,13 +122,17 @@ export default function GoogleMap({ place, searchable, ContentInfoActions }: Goo
       const map = new Map(mapDiv, { center: { lat: 39.1019503402557, lng: -84.5016085506675 }, zoom: 15 });
       const infoWindow = new google.maps.InfoWindow();
 
+      const placesService = new PlacesService(map);
       setAutocompleteService(new AutocompleteService());
-      setPlacesService(new PlacesService(map));
+      setPlacesService(placesService);
       setMap(map);
       setInfowindow(infoWindow);
       if (place) {
         // Create an initial place marker
         createMarker(place, infoWindow, map);
+        if (place.place_id) {
+          searchMap(place.place_id, placesService);
+        }
       }
     };
 
@@ -210,9 +214,9 @@ export default function GoogleMap({ place, searchable, ContentInfoActions }: Goo
    * @param prediction
    * @returns
    */
-  const searchMap = async (prediction: AutocompletePrediction) => {
+  const searchMap = async (placeId: string, placesService: google.maps.places.PlacesService | undefined) => {
     const request: google.maps.places.PlaceDetailsRequest = {
-      placeId: prediction.place_id,
+      placeId: placeId,
       fields: GooglePlacesKeys.map((key) => key),
     };
     if (!placesService) {
@@ -241,7 +245,7 @@ export default function GoogleMap({ place, searchable, ContentInfoActions }: Goo
             onChange={(event: any, newPrediction: AutocompletePrediction | null) => {
               setSelectedPrediction(newPrediction);
               if (newPrediction) {
-                searchMap(newPrediction);
+                searchMap(newPrediction.place_id, placesService);
               }
             }}
             onInputChange={async (event, newInputValue) => {
