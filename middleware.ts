@@ -1,5 +1,4 @@
 import withAuth from 'next-auth/middleware';
-import { AdminRoute } from 'app/routes';
 
 export default withAuth(
   // `withAuth` augments your `Request` with the user's token.
@@ -10,14 +9,14 @@ export default withAuth(
         const { nextUrl } = req;
 
         // The admin route is the only one that needs auth right now
-        if (nextUrl.pathname.startsWith(AdminRoute.href)) {
+        if (nextUrl.pathname.startsWith('/admin')) {
           return !!token;
         }
 
         return true;
       },
     },
-  }
+  },
 );
 
 export const config = {
