@@ -1,12 +1,12 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Box, Button, CardActions, CardContent, CardMedia, Grid } from '@mui/material';
 import PhotoIcon from '@mui/icons-material/Photo';
-import ODTextField from './ODTextField';
 import { Vendor, VendorPlace } from '@prisma/client';
-import { useNotifications } from '../hooks/useNotifications';
-import PhotoListSelect from './PhotoListSelect';
 import { OneDishTempData } from 'src/types';
+import { useNotifications } from '../hooks/useNotifications';
+import ODTextField from './ODTextField';
+import PhotoListSelect from './PhotoListSelect';
 import FileUploadButton from './FileUploadButton';
 
 interface FileUploadProps {
@@ -73,10 +73,10 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
             </Box>
           )}
           <FileUploadButton
-            onFileUploaded={(compressedFile, compressedFileString, fileName) => {
+            onFileUploaded={(compressedFile, compressedFileString, name) => {
               setFileString(compressedFileString);
               setFileBlob(compressedFile);
-              setFileName(fileName);
+              setFileName(name);
 
               setSelectedImage(null);
               setUrl(null);

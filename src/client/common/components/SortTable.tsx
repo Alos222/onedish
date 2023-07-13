@@ -143,7 +143,7 @@ export default function SortTable<T>({
           label="Search"
           placeholder="Search..."
           variant="standard"
-          defaultValue={''}
+          defaultValue=""
           onChange={(e) => {
             setText(e.target.value);
           }}
@@ -165,7 +165,7 @@ export default function SortTable<T>({
         )}
         {!!data.length && (
           <TableContainer>
-            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={'medium'}>
+            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
               <EnhancedTableHead
                 headCells={headCells}
                 order={order}
@@ -179,7 +179,7 @@ export default function SortTable<T>({
               )}
               {!loading && (
                 <TableBody>
-                  {data.map((row, index) => children(row))}
+                  {data.map((row) => children(row))}
                   {emptyRows > 0 && (
                     <TableRow
                       style={{

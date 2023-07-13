@@ -1,10 +1,11 @@
-import { ChangeEvent, forwardRef } from 'react';
+import React, { ChangeEvent, forwardRef, MutableRefObject } from 'react';
 import { Button } from '@mui/material';
 import { useNotifications } from '../hooks/useNotifications';
 
 const maxWidth = 800;
 const maxHeight = 800;
 const quality = 0.7;
+const maxFileSizeInMb = 10;
 
 interface FileUploadButtonProps {
   onFileUploaded: (compressedFileBlob: Blob, compressedFileString: string, fileName: string) => void;
@@ -13,6 +14,17 @@ interface FileUploadButtonProps {
 const FileUploadButton = forwardRef<HTMLInputElement, FileUploadButtonProps>(
   ({ onFileUploaded }: FileUploadButtonProps, inputRef) => {
     const { displayError } = useNotifications();
+
+    const clearRef = () => {
+      try {
+        const ref = inputRef as MutableRefObject<HTMLInputElement>;
+        if (ref?.current) {
+          ref.current.value = '';
+        }
+      } catch (e) {
+        console.error('Error when clearing file upload', e);
+      }
+    };
 
     // Function to handle file upload
     const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -24,17 +36,22 @@ const FileUploadButton = forwardRef<HTMLInputElement, FileUploadButtonProps>(
       // Check if the file is an image
       if (!file.type.startsWith('image/')) {
         displayError('You need to upload an image file');
+        clearRef();
         return;
       }
-
-      const reader = new FileReader();
-
+      const fileSize = file.size / 1024 / 1024;
+      if (fileSize > maxFileSizeInMb) {
+        displayError(`Your file upload must be less than 10MB. You tried to upload a ${fileSize.toFixed(2)}MB file`);
+        clearRef();
+        return;
+      }
       // Read the file as a data URL
+      const reader = new FileReader();
       reader.readAsDataURL(file);
 
       // When the file is loaded
-      reader.onload = function (event) {
-        const loadResult = event.target?.result;
+      reader.onload = (readEvent) => {
+        const loadResult = readEvent.target?.result;
         if (!loadResult) {
           return;
         }
@@ -48,12 +65,12 @@ const FileUploadButton = forwardRef<HTMLInputElement, FileUploadButtonProps>(
           if (!ctx) {
             console.error('Context is not available for canvas');
             displayError('Something went wrong during file compression before upload');
+            clearRef();
             return;
           }
 
           // Set the canvas dimensions to the desired compressed size
-          let width = img.width;
-          let height = img.height;
+          let { width, height } = img;
 
           // Calculate the new dimensions while maintaining the aspect ratio
           if (width > height) {
@@ -61,11 +78,9 @@ const FileUploadButton = forwardRef<HTMLInputElement, FileUploadButtonProps>(
               height *= maxWidth / width;
               width = maxWidth;
             }
-          } else {
-            if (height > maxHeight) {
-              width *= maxHeight / height;
-              height = maxHeight;
-            }
+          } else if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
           }
 
           // Set the canvas dimensions
@@ -81,17 +96,19 @@ const FileUploadButton = forwardRef<HTMLInputElement, FileUploadButtonProps>(
             (blob) => {
               if (!blob) {
                 displayError('Could not compress file upload');
+                clearRef();
                 return;
               }
               onFileUploaded(blob, compressedDataUrl, file.name);
             },
             'image/jpeg',
-            quality
+            quality,
           );
         };
 
         // Set the source of the image to the data URL
         // TODO Might want to check this linter ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         img.src = loadResult;
       };
@@ -103,7 +120,7 @@ const FileUploadButton = forwardRef<HTMLInputElement, FileUploadButtonProps>(
         <input type="file" hidden ref={inputRef} onChange={handleFileUpload} />
       </Button>
     );
-  }
+  },
 );
 
 export default FileUploadButton;
