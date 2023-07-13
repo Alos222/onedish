@@ -44,7 +44,7 @@ export default function UserMenu({ user }: UserMenuProps) {
         <Typography variant="subtitle2" color="primary">
           Howdy, {user.name}!
         </Typography>
-        <Tooltip title="Account profiles">
+        <Tooltip title="Account profile">
           <IconButton
             onClick={handleClick}
             size="small"
