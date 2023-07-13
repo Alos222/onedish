@@ -23,6 +23,7 @@ const FileUploadButton = forwardRef<HTMLInputElement, FileUploadButtonProps>(
       const file = event.target.files[0];
       // Check if the file is an image
       if (!file.type.startsWith('image/')) {
+        displayError('You need to upload an image file');
         return;
       }
 
