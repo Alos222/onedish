@@ -108,7 +108,6 @@ const FileUploadButton = forwardRef<HTMLInputElement, FileUploadButtonProps>(
 
         // Set the source of the image to the data URL
         // TODO Might want to check this linter ignore
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         img.src = loadResult;
       };
@@ -122,5 +121,7 @@ const FileUploadButton = forwardRef<HTMLInputElement, FileUploadButtonProps>(
     );
   },
 );
+
+FileUploadButton.displayName = 'FileUploadButton';
 
 export default FileUploadButton;

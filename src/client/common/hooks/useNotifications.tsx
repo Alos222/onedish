@@ -1,33 +1,46 @@
-import Button from '@mui/material/Button';
+import { useCallback } from 'react';
 import { useSnackbar, VariantType } from 'notistack';
+import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
 
 export const useNotifications = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const displaySnackbar = (message: string, variant: VariantType) => {
-    const key = enqueueSnackbar(<div dangerouslySetInnerHTML={{ __html: message.replaceAll('\n', '<br/>') }} />, {
-      variant,
-      persist: true,
-      action: () => (
-        <Button sx={{ color: grey[50] }} onClick={() => closeSnackbar(key)}>
-          Close
-        </Button>
-      ),
-    });
-  };
+  const displaySnackbar = useCallback(
+    (message: string, variant: VariantType) => {
+      const key = enqueueSnackbar(<div dangerouslySetInnerHTML={{ __html: message.replaceAll('\n', '<br/>') }} />, {
+        variant,
+        persist: true,
+        action: () => (
+          <Button sx={{ color: grey[50] }} onClick={() => closeSnackbar(key)}>
+            Close
+          </Button>
+        ),
+      });
+    },
+    [closeSnackbar, enqueueSnackbar]
+  );
 
-  const displayInfo = (message: string) => {
-    displaySnackbar(message, 'info');
-  };
+  const displayInfo = useCallback(
+    (message: string) => {
+      displaySnackbar(message, 'info');
+    },
+    [displaySnackbar]
+  );
 
-  const displayWarning = (message: string) => {
-    displaySnackbar(message, 'warning');
-  };
+  const displayWarning = useCallback(
+    (message: string) => {
+      displaySnackbar(message, 'warning');
+    },
+    [displaySnackbar]
+  );
 
-  const displayError = (message: string) => {
-    displaySnackbar(message, 'error');
-  };
+  const displayError = useCallback(
+    (message: string) => {
+      displaySnackbar(message, 'error');
+    },
+    [displaySnackbar]
+  );
 
   return { displayInfo, displayWarning, displayError };
 };
