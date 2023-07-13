@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardMedia, Grid, Paper, Typography } from '@mui/material';
 import { Vendor } from '@prisma/client';
 import GoogleMap from '../../../common/components/GoogleMap';
@@ -19,12 +19,12 @@ export default function VendorDetails({ vendor, onVendorUpdated }: VendorDetails
       <Grid item xs={12} sm={4}>
         <Card sx={{ mb: 2 }}>
           <CardContent>
-            <PlaceDetails vendor={vendor} />
+            <PlaceDetails vendor={vendor} place={vendor.place} />
             {onVendorUpdated && <ManageVendorDialog vendor={vendor} onVendor={(vendor) => onVendorUpdated(vendor)} />}
           </CardContent>
           {vendorImage && <CardMedia sx={{ height: 200 }} image={vendorImage} title="Vendor image" />}
         </Card>
-        <GoogleMap place={place} />
+        <GoogleMap placeId={place?.placeId} />
         <Typography variant="subtitle2" color="secondary">
           Details on map may differ than those saved for a restaurant
         </Typography>

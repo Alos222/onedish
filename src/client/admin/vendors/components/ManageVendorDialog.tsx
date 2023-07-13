@@ -419,7 +419,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
           </Grid>
           <Grid item xs={12} sm={7}>
             <GoogleMap
-              place={vendor?.place}
+              placeId={vendor?.place?.placeId}
               searchable
               ContentInfoActions={(place) => (
                 <Button
@@ -428,7 +428,7 @@ export default function ManageVendorDialog({ vendor, onVendor }: ManageVendorDia
                   onClick={() => {
                     if (place) {
                       setPlaceName(place.name);
-                      setPlaceAddress(place.formatted_address);
+                      setPlaceAddress(place.formattedAddress);
                       setPlace(place);
                     }
                   }}

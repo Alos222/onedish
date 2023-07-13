@@ -1,18 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Autocomplete, TextField, CircularProgress, Typography, Button, Divider } from '@mui/material';
-import type { Vendor, VendorPlace } from '@prisma/client';
+import { useCallback, useRef, useState } from 'react';
+import { Box, Autocomplete, TextField, CircularProgress } from '@mui/material';
+import { Loader } from '@googlemaps/js-api-loader';
+import { VendorPlace } from '@prisma/client';
 import { useDebouncedCallback } from 'use-debounce';
-import usePlacesServices from '../../admin/vendors/hooks/usePlacesServices';
 import { useNotifications } from 'src/client/common/hooks/useNotifications';
 import { GooglePlacesKeys } from 'src/types';
 import { ConfigService } from 'src/server/services/config.service';
-import { Loader } from '@googlemaps/js-api-loader';
 import GoogleContentInfo from './GoogleContentInfo';
 
 type AutocompletePrediction = google.maps.places.AutocompletePrediction;
 
 const googlePlaceToVendorPlace = (googlePlace: google.maps.places.PlaceResult): VendorPlace => ({
-  formatted_address: googlePlace.formatted_address || null,
+  formattedAddress: googlePlace.formatted_address || null,
   geometry: googlePlace.geometry
     ? {
         location: {
@@ -29,18 +28,18 @@ const googlePlaceToVendorPlace = (googlePlace: google.maps.places.PlaceResult): 
     : null,
   icon: googlePlace.icon || null,
   name: googlePlace.name || null,
-  place_id: googlePlace.place_id || null,
-  price_level: googlePlace.price_level || null,
+  placeId: googlePlace.place_id || null,
+  priceLevel: googlePlace.price_level || null,
   rating: googlePlace.rating || null,
   url: googlePlace.url || null,
   website: googlePlace.website || null,
-  html_attributions: googlePlace.html_attributions || [],
+  htmlAttributions: googlePlace.html_attributions || [],
   photos:
     googlePlace.photos?.map((photo) => ({
       url: photo.getUrl(),
       height: photo.height,
       width: photo.width,
-      html_attributions: photo.html_attributions,
+      htmlAttributions: photo.html_attributions,
     })) || [],
 });
 
@@ -48,7 +47,7 @@ interface GoogleMapProps {
   /**
    * An initial place to start the map loaded at
    */
-  place?: VendorPlace | null;
+  placeId?: string | null;
 
   /**
    * True if the map should be searchable
@@ -65,7 +64,7 @@ interface GoogleMapProps {
  * Component for setting up vendor details, with a map that an be searched
  * @returns
  */
-export default function GoogleMap({ place, searchable, ContentInfoActions }: GoogleMapProps) {
+export default function GoogleMap({ placeId, searchable, ContentInfoActions }: GoogleMapProps) {
   // Ref to the element for showing content in the map info window
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -87,7 +86,7 @@ export default function GoogleMap({ place, searchable, ContentInfoActions }: Goo
   const [infowindow, setInfowindow] = useState<google.maps.InfoWindow | undefined>();
   const [marker, setMarker] = useState<google.maps.Marker | undefined>();
 
-  const [currentPlace, setCurrentPlace] = useState<VendorPlace | null | undefined>(place);
+  const [currentPlace, setCurrentPlace] = useState<VendorPlace | null | undefined>(null);
 
   const { displayWarning } = useNotifications();
 
@@ -100,7 +99,6 @@ export default function GoogleMap({ place, searchable, ContentInfoActions }: Goo
       const l = new Loader({
         apiKey: ConfigService.googlePlacesApiKey(),
         version: 'weekly',
-        libraries: ['places'],
       });
       setLoader(l);
       setLoading(true);
@@ -127,12 +125,9 @@ export default function GoogleMap({ place, searchable, ContentInfoActions }: Goo
       setPlacesService(placesService);
       setMap(map);
       setInfowindow(infoWindow);
-      if (place) {
-        // Create an initial place marker
-        createMarker(place, infoWindow, map);
-        if (place.place_id) {
-          searchMap(place.place_id, placesService);
-        }
+      if (placeId) {
+        // Get an initial place
+        searchMap(placeId, placesService, infoWindow, map);
       }
     };
 
@@ -165,7 +160,7 @@ export default function GoogleMap({ place, searchable, ContentInfoActions }: Goo
         infoWindow.open(map, marker);
       }
     },
-    [marker]
+    [marker],
   );
 
   const createMarker = useCallback(
@@ -192,7 +187,7 @@ export default function GoogleMap({ place, searchable, ContentInfoActions }: Goo
 
       google.maps.event.addListener(newMarker, 'click', () => openContent(infoWindow, newMarker));
     },
-    [map, infowindow, marker]
+    [map, infowindow, marker],
   );
 
   /**
@@ -214,7 +209,12 @@ export default function GoogleMap({ place, searchable, ContentInfoActions }: Goo
    * @param prediction
    * @returns
    */
-  const searchMap = async (placeId: string, placesService: google.maps.places.PlacesService | undefined) => {
+  const searchMap = async (
+    placeId: string,
+    placesService?: google.maps.places.PlacesService,
+    infoWindow?: google.maps.InfoWindow,
+    map?: google.maps.Map,
+  ) => {
     const request: google.maps.places.PlaceDetailsRequest = {
       placeId: placeId,
       fields: GooglePlacesKeys.map((key) => key),
@@ -224,9 +224,9 @@ export default function GoogleMap({ place, searchable, ContentInfoActions }: Goo
       return;
     }
     placesService.getDetails(request, (place, status) => {
-      if (status === google.maps.places.PlacesServiceStatus.OK && place?.geometry?.location && infowindow && map) {
+      if (status === google.maps.places.PlacesServiceStatus.OK && place?.geometry?.location && infoWindow && map) {
         const vendorPlace = googlePlaceToVendorPlace(place);
-        createMarker(vendorPlace, infowindow, map);
+        createMarker(vendorPlace, infoWindow, map);
         setCurrentPlace(vendorPlace);
       }
     });
@@ -245,7 +245,7 @@ export default function GoogleMap({ place, searchable, ContentInfoActions }: Goo
             onChange={(event: any, newPrediction: AutocompletePrediction | null) => {
               setSelectedPrediction(newPrediction);
               if (newPrediction) {
-                searchMap(newPrediction.place_id, placesService);
+                searchMap(newPrediction.place_id, placesService, infowindow, map);
               }
             }}
             onInputChange={async (event, newInputValue) => {

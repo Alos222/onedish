@@ -8,17 +8,17 @@ datasource db {
 }
 
 type VendorPlace {
-  formatted_address String?
-  geometry          VendorPlaceGeometry?
-  html_attributions String[]
-  icon              String?
-  name              String?
-  place_id          String?
-  price_level       Int?
-  rating            Float?
-  url               String?
-  website           String?
-  photos            VendorPhoto[]
+  formattedAddress String?
+  geometry         VendorPlaceGeometry?
+  htmlAttributions String[]
+  icon             String?
+  name             String?
+  placeId          String?
+  priceLevel       Int?
+  rating           Float?
+  url              String?
+  website          String?
+  photos           VendorPhoto[]
 }
 
 type VendorPlaceGeometry {
@@ -39,10 +39,10 @@ type VendorPlaceGeometryViewport {
 }
 
 type VendorPhoto {
-  url               String
-  height            Float
-  width             Float
-  html_attributions String[]
+  url              String
+  height           Float
+  width            Float
+  htmlAttributions String[]
 }
 
 type OneDish {

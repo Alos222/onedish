@@ -21,11 +21,10 @@ interface PlaceDetailsProps {
  * @param param0
  * @returns
  */
-export default function PlaceDetails({ vendor, place: p }: PlaceDetailsProps) {
-  const { name: vendorName, address: vendorAddress, place: vendorPlace } = vendor || {};
+export default function PlaceDetails({ vendor, place }: PlaceDetailsProps) {
+  const { name: vendorName, address: vendorAddress } = vendor || {};
 
-  const place = vendorPlace || p;
-  const { name: placeName, formatted_address: placeAddress, icon, price_level, rating, url, website } = place || {};
+  const { name: placeName, formattedAddress: placeAddress, icon, priceLevel, rating, url, website } = place || {};
 
   // Prefer the vendor defined name and address, if available
   const name = vendorName || placeName;
@@ -35,7 +34,7 @@ export default function PlaceDetails({ vendor, place: p }: PlaceDetailsProps) {
   const image = icon ? <Image src={icon} width={iconSize} height={iconSize} alt="Vendor icon" /> : null;
 
   let dollars = [];
-  const price: number = price_level || 0;
+  const price: number = priceLevel || 0;
   for (let i = 0; i < price; i++) {
     dollars.push(<AttachMoneyIcon key={i} fontSize="small" sx={{ color: green[300], mr: -1 }} />);
   }

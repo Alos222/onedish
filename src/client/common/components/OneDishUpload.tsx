@@ -24,7 +24,7 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
   const [fileName, setFileName] = useState<string | undefined>();
   const [fileString, setFileString] = useState<string | undefined>();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [url, setUrl] = useState<string | undefined>();
+  const [url, setUrl] = useState<string | null>(null);
   const [id, setId] = useState(uuidv4());
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -79,7 +79,7 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
               setFileName(fileName);
 
               setSelectedImage(null);
-              setUrl(undefined);
+              setUrl(null);
             }}
             ref={inputRef}
           />
@@ -112,7 +112,7 @@ export default function OneDishUpload({ vendor, place, onConfirm }: FileUploadPr
           label="Use for OneDish"
           onPhotoSelected={(photo) => {
             setSelectedImage(photo);
-            setUrl(photo || undefined);
+            setUrl(photo);
 
             // Clear out any file uploads
             setFileString(undefined);
