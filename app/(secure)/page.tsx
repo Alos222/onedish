@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: `${ConfigService.appName()}`,
 };
 
-export const revalidate = 10;
+export const revalidate = 0;
 
 async function getVendors() {
   const vendors = await new VendorService().getAllOneDishVendors();
