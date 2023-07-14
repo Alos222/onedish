@@ -34,8 +34,6 @@ backend:
         # Gets all env vars that start with NEXT_PUBLIC_
         - env | grep -e NEXT_PUBLIC_ >> .env.production
 
-        - cat .env.production
-
         # We use pnpm for this project, so need to install it here
         - npm install -g pnpm
         - pnpm install
