@@ -31,7 +31,6 @@ backend:
         - env | grep -e S3_REGION >> .env.production
 
         - env | grep -e BASE_APP_URL >> .env.production
-        - env | grep -e NEXTAUTH_URL >> .env.production
         # Gets all env vars that start with NEXT_PUBLIC_
         - env | grep -e NEXT_PUBLIC_ >> .env.production
 
