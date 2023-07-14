@@ -10,8 +10,12 @@ export const metadata: Metadata = {
 
 export const revalidate = 10;
 
-export default async function App() {
+async function getVendors() {
   const vendors = await new VendorService().getAllOneDishVendors();
+  return vendors;
+}
 
+export default async function App() {
+  const vendors = await getVendors();
   return <HomePage vendors={vendors} />;
 }
